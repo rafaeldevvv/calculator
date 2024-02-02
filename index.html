@@ -1,11 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Calculator</title>
-   </head>
-   <body>
-      
-   </body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator</title>
+
+    <link rel="icon" href="./images/favicon-32x32.png" />
+  </head>
+  <body>
+    <main>
+      <article>
+        <header>
+          <h1>Calc</h1>
+          <form class="theme-form">
+            <fieldset>
+              <legend>theme</legend>
+              <label for="theme1">
+                1
+                <input type="radio" name="theme" id="theme1" />
+              </label>
+              <label for="theme2">
+                2
+                <input type="radio" name="theme" id="theme2" />
+              </label>
+              <label for="theme3">
+                3
+                <input type="radio" name="theme" id="theme3" />
+              </label>
+            </fieldset>
+          </form>
+        </header>
+
+        <div class="calculator">
+          <div class="expression"></div>
+          <div class="keyboard">
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button>DEL</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>+</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>-</button>
+            <button>.</button>
+            <button>0</button>
+            <button>/</button>
+            <button>x</button>
+            <button>reset</button>
+            <button>=</button>
+          </div>
+        </div>
+      </article>
+    </main>
+  </body>
 </html>
