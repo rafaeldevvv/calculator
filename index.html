@@ -9,16 +9,16 @@
     <link rel="stylesheet" href="./styles/index.css" />
   </head>
   <body class="theme-blue">
-    <main>
+    <main class="my-4">
       <article>
-        <header>
-          <h1>Calc</h1>
-          <form class="theme-form" novalidate>
-            <fieldset>
+        <header class="flex justify-between mb-4">
+          <h1 class="lowercase fs-300">Calc</h1>
+          <form class="theme-form fs-100" novalidate>
+            <fieldset class="flex">
               <legend>theme</legend>
               <label for="theme1">
                 1
-                <input type="radio" name="theme" id="theme1" />
+                <input type="radio" name="theme" id="theme1" checked />
               </label>
               <label for="theme2">
                 2
@@ -33,26 +33,36 @@
         </header>
 
         <div class="calculator">
-          <div class="expression"></div>
-          <div class="keyboard">
-            <button>7</button>
-            <button>8</button>
-            <button>9</button>
-            <button>DEL</button>
-            <button>4</button>
-            <button>5</button>
-            <button>6</button>
-            <button>+</button>
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>-</button>
-            <button>.</button>
-            <button>0</button>
-            <button>/</button>
-            <button>x</button>
-            <button>reset</button>
-            <button>=</button>
+          <div class="expression mb-3 fs-400 text-right rounded-2 pt-2 px-2">
+            890
+          </div>
+          <div class="keyboard grid bg-secondary rounded-2">
+            <button class="key normal-key fs-300 text-secondary">7</button>
+            <button class="key normal-key fs-300 text-secondary">8</button>
+            <button class="key normal-key fs-300 text-secondary">9</button>
+            <button class="key special-key text-primary fs-200 uppercase">
+              DEL
+            </button>
+            <button class="key normal-key fs-300 text-secondary">4</button>
+            <button class="key normal-key fs-300 text-secondary">5</button>
+            <button class="key normal-key fs-300 text-secondary">6</button>
+            <button class="key normal-key fs-300 text-secondary">+</button>
+            <button class="key normal-key fs-300 text-secondary">1</button>
+            <button class="key normal-key fs-300 text-secondary">2</button>
+            <button class="key normal-key fs-300 text-secondary">3</button>
+            <button class="key normal-key fs-300 text-secondary">-</button>
+            <button class="key normal-key fs-300 text-secondary">.</button>
+            <button class="key normal-key fs-300 text-secondary">0</button>
+            <button class="key normal-key fs-300 text-secondary">/</button>
+            <button class="key normal-key fs-300 text-secondary">x</button>
+            <button
+              class="key special-key text-primary grid-span-2-col uppercase fs-200"
+            >
+              reset
+            </button>
+            <button class="key most-special-key grid-span-2-col text-tertiary">
+              =
+            </button>
           </div>
         </div>
       </article>
