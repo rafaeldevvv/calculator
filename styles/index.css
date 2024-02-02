@@ -1,0 +1,147 @@
+* {
+   padding: 0;
+   margin: 0;
+   box-sizing: border-box;
+}
+
+:root {
+   --c-primary: ;
+   --c-secondary: ;
+   --c-tertiary: ;
+
+   --c-normal-key-bg: ;
+   --c-normal-key-shadow: ;
+   --c-special-key-bg: ;
+   --c-special-key-shadow: ;
+   --c-result-key-bg: ;
+   --c-result-key-shadow: ;
+
+   --c-text-primary: ;
+   --c-text-secondary: ;
+
+   --fs-100: .8rem;
+   --fs-200: 1.4rem;
+   --fs-300: 2rem;
+}
+
+.theme-blue {
+   --c-primary: 222 26% 31%;
+   --c-secondary: 223 31% 20%;
+   --c-tertiary: 224 36% 15%;
+
+   --c-normal-key-bg: 225 21% 49%;
+   --c-normal-key-shadow: 224 28% 35%;
+   --c-special-key-bg: 6 63% 50%;
+   --c-special-key-shadow: 6 70% 34%;
+   --c-result-key-bg: 30 25% 89%;
+   --c-result-key-shadow: 28 16% 65%;
+
+   --c-text-primary: 0 0% 100%;
+   --c-text-secondary: 221 14% 31%;
+   --c-text-tertiary: 221 14% 31%;
+}
+
+.theme-white {
+   --c-primary: 0 0% 90%;
+   --c-secondary: 0 5% 81%;
+   --c-tertiary: 0 0% 93%;
+
+   --c-normal-key-bg: 185 42% 37%;
+   --c-normal-key-shadow: 185 58% 25%;
+   --c-special-key-bg: 25 98% 40%;
+   --c-special-key-shadow: 25 99% 27%;
+   --c-result-key-bg: 45 7% 89%;
+   --c-result-key-shadow: 35 11% 61%;
+
+   --c-text-primary: 60 10% 19%;
+   --c-text-secondary: 0 0% 100%;
+   --c-text-tertiary: 0 0% 100%;
+}
+
+.theme-purple {
+   --c-primary: 268 75% 9%;
+   --c-secondary: 268 71% 12%;
+   --c-tertiary: 268 71% 12%;
+
+   --c-normal-key-bg: 281 89% 26%;
+   --c-normal-key-shadow: 285 91% 52%;
+   --c-special-key-bg: 176 100% 44%;
+   --c-special-key-shadow: 177 92% 70%;
+   --c-result-key-bg: 268 47% 21%;
+   --c-result-key-shadow: 290 70% 36%;
+
+   --c-text-primary: 52 100% 62%;
+   --c-text-secondary: 198 20% 13%;
+   --c-text-tertiary: 0 0% 100%;
+}
+
+body {
+   background-color: hsl(var(--c-primary));
+   font-size: var(--fs-300);
+   color: hsl(var(--c-text-primary));
+
+}
+
+img,
+picture {
+   max-width: 100%;
+   display: block;
+}
+
+/* make forms easier to work with */
+input,
+button,
+textarea,
+select {
+   font: inherit;
+}
+
+/* remove animations for people who've turned them off */
+@media (prefers-reduced-motion: reduce) {
+
+   *,
+   *::before,
+   *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+   }
+}
+
+/* ================== Utilities ==================== */
+.fs-100 {
+   font-size: var(--fs-100);
+}
+
+.fs-200 {
+   font-size: var(--fs-200);
+}
+
+.fs-300 {
+   font-size: var(--fs-300);
+}
+
+.text-primary {
+   color: hsl(var(--c-text-primary));
+}
+
+.text-secondary {
+   color: hsl(var(--c-text-secondary));
+}
+
+.text-tertiary {
+   color: hsl(var(--c-text-tertiary));
+}
+
+.bg-primary {
+   background-color: hsl(var(--c-primary));
+}
+
+.bg-secondary {
+   background-color: hsl(var(--c-secondary));
+}
+
+.bg-primary {
+   background-color: hsl(var(--c-tertiary));
+}
