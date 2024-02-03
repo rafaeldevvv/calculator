@@ -18,51 +18,67 @@
     <main class="my-4">
       <article>
         <header class="flex justify-between mb-4">
-          <h1 class="lowercase fs-300">Calc</h1>
-          <form class="theme-form fs-100" novalidate>
-            <fieldset class="flex">
-              <legend class="uppercase fs-100">theme</legend>
-              <label for="theme1">
-                1
-                <input type="radio" name="theme" id="theme1" checked />
-              </label>
-              <label for="theme2">
-                2
-                <input type="radio" name="theme" id="theme2" />
-              </label>
-              <label for="theme3">
-                3
-                <input type="radio" name="theme" id="theme3" />
-              </label>
+          <h1 class="lowercase fs-400">Calc</h1>
+          <form class="theme-form fs-100 fw-600">
+            <fieldset class="radio-group grid gap-y-0.5">
+              <legend class="uppercase fs-100 radio-group__title">theme</legend>
+              <div class="flex justify-around radio-group__labels-wrapper">
+                <label for="theme1" class="radio-group__label">1</label>
+                <label for="theme2" class="radio-group__label">2</label>
+                <label for="theme3" class="radio-group__label">3</label>
+              </div>
+              <div
+                class="flex bg-secondary rounded-full radio-group__radios-wrapper gap-1"
+              >
+                <input
+                  type="radio"
+                  name="theme"
+                  id="theme1"
+                  checked
+                  class="radio-group__radio"
+                />
+                <input
+                  type="radio"
+                  name="theme"
+                  id="theme2"
+                  class="radio-group__radio"
+                />
+                <input
+                  type="radio"
+                  name="theme"
+                  id="theme3"
+                  class="radio-group__radio"
+                />
+              </div>
             </fieldset>
           </form>
         </header>
 
         <div class="calculator">
-          <div class="expression mb-3 fs-400 text-right rounded-2 pt-3 px-2">
+          <div class="expression mb-3 fs-500 text-right rounded-2 pt-3 px-2">
             890
           </div>
           <div class="keyboard grid bg-secondary rounded-2 fw-600">
-            <button class="key normal-key fs-300 text-secondary">7</button>
-            <button class="key normal-key fs-300 text-secondary">8</button>
-            <button class="key normal-key fs-300 text-secondary">9</button>
-            <button class="key special-key text-primary fs-200 uppercase">
+            <button class="key normal-key fs-400 text-secondary">7</button>
+            <button class="key normal-key fs-400 text-secondary">8</button>
+            <button class="key normal-key fs-400 text-secondary">9</button>
+            <button class="key special-key text-primary fs-300 uppercase">
               DEL
             </button>
-            <button class="key normal-key fs-300 text-secondary">4</button>
-            <button class="key normal-key fs-300 text-secondary">5</button>
-            <button class="key normal-key fs-300 text-secondary">6</button>
-            <button class="key normal-key fs-300 text-secondary">+</button>
-            <button class="key normal-key fs-300 text-secondary">1</button>
-            <button class="key normal-key fs-300 text-secondary">2</button>
-            <button class="key normal-key fs-300 text-secondary">3</button>
-            <button class="key normal-key fs-300 text-secondary">-</button>
-            <button class="key normal-key fs-300 text-secondary">.</button>
-            <button class="key normal-key fs-300 text-secondary">0</button>
-            <button class="key normal-key fs-300 text-secondary">/</button>
-            <button class="key normal-key fs-300 text-secondary">x</button>
+            <button class="key normal-key fs-400 text-secondary">4</button>
+            <button class="key normal-key fs-400 text-secondary">5</button>
+            <button class="key normal-key fs-400 text-secondary">6</button>
+            <button class="key normal-key fs-400 text-secondary">+</button>
+            <button class="key normal-key fs-400 text-secondary">1</button>
+            <button class="key normal-key fs-400 text-secondary">2</button>
+            <button class="key normal-key fs-400 text-secondary">3</button>
+            <button class="key normal-key fs-400 text-secondary">-</button>
+            <button class="key normal-key fs-400 text-secondary">.</button>
+            <button class="key normal-key fs-400 text-secondary">0</button>
+            <button class="key normal-key fs-400 text-secondary">/</button>
+            <button class="key normal-key fs-400 text-secondary">x</button>
             <button
-              class="key special-key text-primary grid-span-2-col uppercase fs-200"
+              class="key special-key text-primary grid-span-2-col uppercase fs-300"
             >
               reset
             </button>

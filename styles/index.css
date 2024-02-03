@@ -16,13 +16,24 @@
    --c-most-special-key-bg: ;
    --c-most-special-key-shadow: ;
 
+   /*
+   (COMMENT FOR SELF-LEARNING, NO NEED TO READ)
+   it tried to do var(--c-most-special-key-bg) 
+   because i thought it would always get the value for that variable
+   but it happens that as custom properties are inherited and --c-form-control: ;
+   is defined here in :root, it gets the value that --c-most-special-key-bg has in the
+   :root, not in the nested theme classes defined below. So i have to assign assign values for
+   this property in the theme classes. */
+   --c-form-control: ;
+
    --c-text-primary: ;
    --c-text-secondary: ;
 
-   --fs-100: 1rem;
-   --fs-200: 1.4rem;
-   --fs-300: 2rem;
-   --fs-400: 2.5rem;
+   --fs-100: .7rem;
+   --fs-200: 1rem;
+   --fs-300: 1.4rem;
+   --fs-400: 2rem;
+   --fs-500: 2.5rem;
 
    --ff-sans: "League Spartan", sans-serif;
 }
@@ -38,6 +49,8 @@
    --c-special-key-shadow: 224 28% 35%;
    --c-most-special-key-bg: 6 63% 50%;
    --c-most-special-key-shadow: 6 70% 34%;
+
+   --c-form-control: var(--c-most-special-key-bg);
 
    --c-text-primary: 0 0% 100%;
    --c-text-secondary: 221 14% 31%;
@@ -56,6 +69,8 @@
    --c-most-special-key-bg: 45 7% 89%;
    --c-most-special-key-shadow: 35 11% 61%;
 
+   --c-form-control: var(--c-most-special-key-bg);
+
    --c-text-primary: 60 10% 19%;
    --c-text-secondary: 0 0% 100%;
    --c-text-tertiary: 0 0% 100%;
@@ -72,6 +87,8 @@
    --c-special-key-shadow: 177 92% 70%;
    --c-most-special-key-bg: 268 47% 21%;
    --c-most-special-key-shadow: 290 70% 36%;
+
+   --c-form-control: var(--c-most-special-key-bg);
 
    --c-text-primary: 52 100% 62%;
    --c-text-secondary: 198 20% 13%;
@@ -140,6 +157,10 @@ button {
    font-size: var(--fs-400);
 }
 
+.fs-500 {
+   font-size: var(--fs-400);
+}
+
 .ff-sans {
    font-family: var(--ff-sans);
 }
@@ -176,7 +197,7 @@ button {
    background-color: hsl(var(--c-secondary));
 }
 
-.bg-primary {
+.bg-tertiary {
    background-color: hsl(var(--c-tertiary));
 }
 
@@ -188,12 +209,24 @@ button {
    justify-content: space-between;
 }
 
+.justify-around {
+   justify-content: space-around;
+}
+
 .grid {
    display: grid
 }
 
 .grid-span-2-col {
    grid-column: span 2;
+}
+
+.gap-1 {
+   gap: .5rem;
+}
+
+.gap-y-0\.5 {
+   row-gap: .25rem;
 }
 
 .uppercase {
@@ -268,6 +301,26 @@ button {
    border-radius: .6rem;
 }
 
+.rounded-full {
+   border-radius: 9999px
+}
+
+.letter-spacing-1 {
+   letter-spacing: 1px;
+}
+
+/* https://webaim.org/techniques/css/invisiblecontent/ */
+.visually-hidden {
+   clip: rect(1px, 1px, 1px, 1px);
+   clip-path: inset(50%);
+   height: 1px;
+   width: 1px;
+   margin: -1px;
+   overflow: hidden;
+   padding: 0;
+   position: absolute;
+}
+
 /* ===================== components ======================== */
 
 .key {
@@ -309,4 +362,56 @@ button {
 .expression {
    height: 80px;
    background-color: hsl(var(--c-tertiary));
+}
+
+/* ====================== radio buttons ============================= */
+.radio-group {
+   outline: 0;
+   border: 0;
+   grid-template-areas:
+      "..... labels"
+      "title inputs";
+   column-gap: clamp(.5rem, 5vw, 2rem);
+}
+
+.radio-group__title {
+   grid-area: title;
+   align-self: center;
+   /* https://stackoverflow.com/questions/4860708/how-to-position-the-legend-inside-a-fieldset-with-a-border */
+   float: left;
+}
+
+.radio-group__labels-wrapper {
+   grid-area: labels;
+}
+
+.radio-group__label {
+   text-align: center;
+   display: block;
+}
+
+.radio-group__radios-wrapper {
+   grid-area: inputs;
+   padding: .3rem;
+}
+
+.radio-group__radio {
+   -webkit-appearance: none;
+   appearance: none;
+   width: 1rem;
+   border-radius: 50%;
+   aspect-ratio: 1;
+   color: hsl(var(--c-form-control));
+}
+
+.radio-group__radio:checked {
+   /* @see https://moderncss.dev/pure-css-custom-styled-radio-buttons/
+   (i know this isn't js to use jsdoc comments but you get the point) */
+   background-color: CanvasText;
+   box-shadow: inset 1rem 1rem currentColor;
+}
+
+.radio-group__radio:focus-visible {
+   outline: 3px dashed hsl(var(--c-text-primary));
+   outline-offset: 2px;
 }
