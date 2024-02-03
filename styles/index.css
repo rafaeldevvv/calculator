@@ -364,7 +364,7 @@ button {
 .keyboard {
    grid-template-columns: repeat(4, 1fr);
    padding: 1.5rem;
-   gap: 1rem;
+   gap: clamp(.5rem, 4vw, 1.5rem);
 }
 
 .expression {
