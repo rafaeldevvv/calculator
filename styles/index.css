@@ -62,17 +62,17 @@
    --c-secondary: 0 5% 81%;
    --c-tertiary: 0 0% 93%;
 
-   --c-normal-key-bg: 185 42% 37%;
-   --c-normal-key-shadow: 185 58% 25%;
-   --c-special-key-bg: 25 98% 40%;
-   --c-special-key-shadow: 25 99% 27%;
-   --c-most-special-key-bg: 45 7% 89%;
-   --c-most-special-key-shadow: 35 11% 61%;
+   --c-special-key-bg: 185 42% 37%;
+   --c-special-key-shadow: 185 58% 25%;
+   --c-most-special-key-bg: 25 98% 40%;
+   --c-most-special-key-shadow: 25 99% 27%;
+   --c-normal-key-bg: 45 7% 89%;
+   --c-normal-key-shadow: 35 11% 61%;
 
    --c-form-control: var(--c-most-special-key-bg);
 
    --c-text-primary: 60 10% 19%;
-   --c-text-secondary: 0 0% 100%;
+   --c-text-secondary: 60 10% 19%;
    --c-text-tertiary: 0 0% 100%;
 }
 
@@ -81,18 +81,18 @@
    --c-secondary: 268 71% 12%;
    --c-tertiary: 268 71% 12%;
 
-   --c-normal-key-bg: 281 89% 26%;
-   --c-normal-key-shadow: 285 91% 52%;
-   --c-special-key-bg: 176 100% 44%;
-   --c-special-key-shadow: 177 92% 70%;
-   --c-most-special-key-bg: 268 47% 21%;
-   --c-most-special-key-shadow: 290 70% 36%;
+   --c-special-key-bg: 281 89% 26%;
+   --c-special-key-shadow: 285 91% 52%;
+   --c-most-special-key-bg: 176 100% 44%;
+   --c-most-special-key-shadow: 177 92% 70%;
+   --c-normal-key-bg: 268 47% 21%;
+   --c-normal-key-shadow: 290 70% 36%;
 
    --c-form-control: var(--c-most-special-key-bg);
 
    --c-text-primary: 52 100% 62%;
-   --c-text-secondary: 198 20% 13%;
-   --c-text-tertiary: 0 0% 100%;
+   --c-text-secondary: 52 100% 62%;
+   --c-text-tertiary: var(--c-primary);
 }
 
 body {
@@ -195,6 +195,10 @@ button {
 
 .text-tertiary {
    color: hsl(var(--c-text-tertiary));
+}
+
+.text-white {
+   color: #fff;
 }
 
 .bg-primary {
