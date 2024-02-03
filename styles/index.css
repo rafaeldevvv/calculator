@@ -23,6 +23,8 @@
    --fs-200: 1.4rem;
    --fs-300: 2rem;
    --fs-400: 2.5rem;
+
+   --ff-sans: "League Spartan", sans-serif;
 }
 
 .theme-blue {
@@ -136,6 +138,22 @@ button {
 
 .fs-400 {
    font-size: var(--fs-400);
+}
+
+.ff-sans {
+   font-family: var(--ff-sans);
+}
+
+.fw-400 {
+   font-weight: 400;
+}
+
+.fw-500 {
+   font-weight: 500;
+}
+
+.fw-600 {
+   font-weight: 600;
 }
 
 .text-primary {
@@ -259,7 +277,7 @@ button {
    display: block;
    border-radius: .3rem;
    box-shadow: 0 var(--shadow-offset) hsl(var(--c-shadow));
-   padding: .8rem clamp(.5rem, 3vw, 1.1rem);
+   padding: 1rem clamp(.5rem, 3vw, 1.1rem) .6rem;
 }
 
 .key:active {

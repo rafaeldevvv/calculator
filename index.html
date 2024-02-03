@@ -7,15 +7,21 @@
 
     <link rel="icon" href="./images/favicon-32x32.png" />
     <link rel="stylesheet" href="./styles/index.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="theme-blue">
+  <body class="theme-blue ff-sans">
     <main class="my-4">
       <article>
         <header class="flex justify-between mb-4">
           <h1 class="lowercase fs-300">Calc</h1>
           <form class="theme-form fs-100" novalidate>
             <fieldset class="flex">
-              <legend>theme</legend>
+              <legend class="uppercase fs-100">theme</legend>
               <label for="theme1">
                 1
                 <input type="radio" name="theme" id="theme1" checked />
@@ -33,10 +39,10 @@
         </header>
 
         <div class="calculator">
-          <div class="expression mb-3 fs-400 text-right rounded-2 pt-2 px-2">
+          <div class="expression mb-3 fs-400 text-right rounded-2 pt-3 px-2">
             890
           </div>
-          <div class="keyboard grid bg-secondary rounded-2">
+          <div class="keyboard grid bg-secondary rounded-2 fw-600">
             <button class="key normal-key fs-300 text-secondary">7</button>
             <button class="key normal-key fs-300 text-secondary">8</button>
             <button class="key normal-key fs-300 text-secondary">9</button>
