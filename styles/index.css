@@ -201,6 +201,18 @@ button {
    color: #fff;
 }
 
+.uppercase {
+   text-transform: uppercase;
+}
+
+.lowercase {
+   text-transform: lowercase;
+}
+
+.letter-spacing-1 {
+   letter-spacing: 1px;
+}
+
 .bg-primary {
    background-color: hsl(var(--c-primary));
 }
@@ -241,13 +253,6 @@ button {
    row-gap: .25rem;
 }
 
-.uppercase {
-   text-transform: uppercase;
-}
-
-.lowercase {
-   text-transform: lowercase;
-}
 
 .mb-1 {
    margin-bottom: 0.5rem;
@@ -317,9 +322,6 @@ button {
    border-radius: 9999px
 }
 
-.letter-spacing-1 {
-   letter-spacing: 1px;
-}
 
 /* https://webaim.org/techniques/css/invisiblecontent/ */
 .visually-hidden {
