@@ -20,13 +20,12 @@ radios.forEach((r) => {
         r.checked = true;
     else
         r.checked = false;
+    r.addEventListener("change", changeTheme);
 });
-radios.forEach((r) => {
-    r.addEventListener("change", (e) => {
-        const input = e.target;
-        if (input.checked) {
-            const theme = input.value;
-            setTheme(theme);
-        }
-    });
-});
+function changeTheme(e) {
+    const input = e.target;
+    if (input.checked) {
+        const theme = input.value;
+        setTheme(theme);
+    }
+}
