@@ -97,13 +97,15 @@
    --c-text-tertiary: var(--c-primary);
 }
 
+html,
+body {
+   min-height: 100vh;
+}
+
 body {
    background-color: hsl(var(--c-primary));
    font-size: var(--fs-300);
    color: hsl(var(--c-text-primary));
-
-   min-height: 100vh;
-   min-width: 100vw;
 
    display: flex;
    place-items: center;
