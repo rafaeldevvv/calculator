@@ -344,7 +344,7 @@ button {
    display: block;
    border-radius: .3rem;
    box-shadow: 0 var(--shadow-offset) hsl(var(--c-shadow));
-   padding: 1rem clamp(.5rem, 3vw, 1.1rem) .6rem;
+   padding-block: 1.1rem .65rem;
 }
 
 .key:active {
@@ -374,7 +374,7 @@ button {
 }
 
 .expression {
-   height: 80px;
+   height: 5rem;
    background-color: hsl(var(--c-tertiary));
 }
 
