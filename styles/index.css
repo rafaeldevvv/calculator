@@ -101,11 +101,18 @@ body {
    background-color: hsl(var(--c-primary));
    font-size: var(--fs-300);
    color: hsl(var(--c-text-primary));
-   padding-inline: 1.5rem;
+
+   min-height: 100vh;
+   min-width: 100vw;
+
+   display: flex;
+   place-items: center;
 }
 
 main {
-   max-width: 30rem;
+   padding-inline: 1.5rem;
+   max-width: 33rem;
+   width: 100%;
    margin-inline: auto;
 }
 
