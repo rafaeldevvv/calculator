@@ -398,10 +398,28 @@ input[type=radio] {
 }
 
 .expression {
+   --scrollbar-fg: hsl(var(--c-text-primary));
+   --scrollbar-bg: hsl(var(--c-tertiary));
+
    height: 5rem;
    background-color: hsl(var(--c-tertiary));
+   text-wrap: nowrap;
    overflow-x: overlay;
    overflow-y: hidden;
+
+   scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
+}
+
+.expression::-webkit-scrollbar {
+   height: 10px;
+}
+
+.expression::-webkit-scrollbar-thumb {
+   background-color: var(--scrollbar-fg);
+}
+
+.expression::-webkit-scrollbar-track {
+   background-color: var(--scrollbar-bg);
 }
 
 /* ====================== radio buttons ============================= */
