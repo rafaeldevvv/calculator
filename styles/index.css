@@ -77,6 +77,8 @@
 }
 
 .theme-purple {
+   --selected-brightness: 1.8;
+
    --c-primary: 268 75% 9%;
    --c-secondary: 268 71% 12%;
    --c-tertiary: 268 71% 12%;
@@ -124,6 +126,10 @@ select {
 button {
    display: block;
    border: 0;
+   cursor: pointer;
+}
+
+input[type=radio] {
    cursor: pointer;
 }
 
@@ -322,7 +328,6 @@ button {
    border-radius: 9999px
 }
 
-
 /* https://webaim.org/techniques/css/invisiblecontent/ */
 .visually-hidden {
    clip: rect(1px, 1px, 1px, 1px);
@@ -333,6 +338,25 @@ button {
    overflow: hidden;
    padding: 0;
    position: absolute;
+}
+
+.brighter-selected {
+   z-index: 1;
+   position: relative;
+   overflow: hidden;
+}
+
+.brighter-selected::before {
+   content: "";
+   position: absolute;
+   inset: 0;
+}
+
+.brighter-selected:focus-visible::before,
+.brighter-selected:hover::before {
+   z-index: -1;
+   -webkit-backdrop-filter: brightness(var(--selected-brightness, 1.5));
+   backdrop-filter: brightness(var(--selected-brightness, 1.5));
 }
 
 /* ===================== components ======================== */
