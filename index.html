@@ -13,8 +13,10 @@
       href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <script src="scripts/themes.js" defer></script>
   </head>
-  <body class="theme-purple ff-sans">
+  <body class="theme-blue ff-sans">
     <main class="my-4">
       <article>
         <header class="flex justify-between mb-4">
@@ -39,19 +41,22 @@
                   name="theme"
                   id="theme1"
                   checked
-                  class="radio-group__radio brighter-selected"
+                  value="theme-blue"
+                  class="radio-group__radio brighter-selected theme-radio"
                 />
                 <input
                   type="radio"
                   name="theme"
                   id="theme2"
-                  class="radio-group__radio brighter-selected"
+                  value="theme-white"
+                  class="radio-group__radio brighter-selected theme-radio"
                 />
                 <input
                   type="radio"
                   name="theme"
                   id="theme3"
-                  class="radio-group__radio brighter-selected"
+                  value="theme-purple"
+                  class="radio-group__radio brighter-selected theme-radio"
                 />
               </div>
             </fieldset>
