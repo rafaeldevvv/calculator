@@ -10,10 +10,15 @@ const calculator = document.querySelector(".calculator") as HTMLElement,
   delKey = calculator.querySelector(".js-del-key") as HTMLButtonElement,
   resultKey = calculator.querySelector(".js-result-key") as HTMLButtonElement,
   expressionNode = calculator.querySelector(".js-expression") as HTMLElement;
-  
+
 function updateCalculatorExpression(exp: string) {
   expressionNode.textContent = exp;
   expressionNode.scrollLeft = expressionNode.scrollWidth;
+}
+
+function deleteLastCharacter() {
+  expression = expression.slice(0, expression.length - 1);
+  updateCalculatorExpression(expression);
 }
 
 symbolKeys.forEach((k) => {
@@ -29,7 +34,8 @@ resetKey.addEventListener("click", () => {
   updateCalculatorExpression(expression);
 });
 
-delKey.addEventListener("click", () => {
-  expression = expression.slice(0, expression.length - 1);
-  updateCalculatorExpression(expression);
+delKey.addEventListener("click", deleteLastCharacter);
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Backspace") deleteLastCharacter();
 });
