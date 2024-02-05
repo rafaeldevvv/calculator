@@ -385,17 +385,17 @@ input[type=radio] {
    transform: translateY(var(--shadow-offset));
 }
 
-.normal-key {
+.key--normal {
    --c-shadow: var(--c-normal-key-shadow);
    background-color: hsl(var(--c-normal-key-bg));
 }
 
-.special-key {
+.key--special {
    --c-shadow: var(--c-special-key-shadow);
    background-color: hsl(var(--c-special-key-bg));
 }
 
-.most-special-key {
+.key--most-special {
    --c-shadow: var(--c-most-special-key-shadow);
    background-color: hsl(var(--c-most-special-key-bg));
 }
@@ -453,7 +453,6 @@ input[type=radio] {
 }
 
 .radio-group__label {
-   text-align: center;
    display: block;
 }
 
