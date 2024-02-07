@@ -481,3 +481,17 @@ input[type=radio] {
    outline: 3px dashed hsl(var(--c-text-primary));
    outline-offset: 2px;
 }
+
+[role=alert] {
+   background-color: hsl(var(--c-most-special-key-bg));
+   color: hsl(var(--c-text-tertiary));
+   padding: 1rem;
+   font-size: 1rem;
+   font-weight: 800;
+   border-radius: .4rem;
+   position: fixed;
+   left: 50%;
+   transform: translateX(-50%);
+   z-index: 9999;
+   max-width: min(100vw, 30rem);
+}

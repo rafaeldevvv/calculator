@@ -1,3 +1,5 @@
+import announce from "./custom-alert.js";
+
 let expression = "";
 
 const calculator = document.querySelector(".calculator") as HTMLElement,
@@ -49,17 +51,12 @@ function getResult() {
     expression = result.toString();
     updateCalculatorExpression(expression);
   } catch (err) {
-    console.error(err);
+    announce(err as any);
   }
 }
 
 const operators = ["+", "-", "x", "÷"] as const;
 type Operator = (typeof operators)[number];
-
-const precedence = [
-  ["x", "÷"],
-  ["+", "-"],
-] as const;
 
 const operatorsFunctions = {
   x: (a: number, b: number) => a * b,
@@ -111,10 +108,6 @@ function destructureExpression(
     term2 = rest.slice(1);
 
   return [Number(term1), operator, Number(term2)];
-}
-
-function getSign(n: number): "+" | "-" {
-  return n < 0 ? "-" : "+";
 }
 
 function doTheMath(exp: string): number {

@@ -1,4 +1,4 @@
-"use strict";
+import announce from "./custom-alert.js";
 let expression = "";
 const calculator = document.querySelector(".calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionNode = calculator.querySelector(".js-expression");
 function updateCalculatorExpression(exp) {
@@ -35,14 +35,10 @@ function getResult() {
         updateCalculatorExpression(expression);
     }
     catch (err) {
-        console.error(err);
+        announce(err);
     }
 }
 const operators = ["+", "-", "x", "÷"];
-const precedence = [
-    ["x", "÷"],
-    ["+", "-"],
-];
 const operatorsFunctions = {
     x: (a, b) => a * b,
     "+": (a, b) => a + b,
@@ -57,9 +53,6 @@ const firstExps = expRegExp("[x÷]"), secondExps = expRegExp("[-+]");
 function destructureExpression(exp) {
     const firstTermMatch = number.exec(exp), term1 = firstTermMatch[0], rest = exp.slice(term1.length), operator = rest[0], term2 = rest.slice(1);
     return [Number(term1), operator, Number(term2)];
-}
-function getSign(n) {
-    return n < 0 ? "-" : "+";
 }
 function doTheMath(exp) {
     checkValidity(exp);
