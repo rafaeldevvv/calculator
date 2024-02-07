@@ -73,9 +73,7 @@ const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/,
  * The regular expression will look like `/(term1)(operator)(term2)/`.
  *
  * @param operatorCharacterClass - A character class for operators, such as '[-+]'.
- * @returns - A mathematical expression regular expression. This regular expression
- * holds three sequential groups, which are, respectively, the first term, the operator
- * used and the second term.
+ * @returns - A mathematical expression regular expression.
  *
  * @example
  * const regexp = expRegExp("[+-]");
@@ -88,6 +86,9 @@ function expRegExp(operatorCharacterClass: string) {
   );
 }
 
+/*
+These defines precedence. Multiplication and division are 
+performed first. Then addition and subtraction. */
 const firstExps = expRegExp("[x÷]"),
   secondExps = expRegExp("[-+]");
 
@@ -97,6 +98,12 @@ const firstExps = expRegExp("[x÷]"),
  * @param exp
  * @returns - A tuple type whose elements are, respectively, the first term, the operator
  * and the second term.
+ *
+ * @example
+ * destructureExpression("1+5");
+ * // -> [1, "+", 5]
+ * destructureExpression("10.35-5.5");
+ * // -> [10.35, "-", 5.5]
  */
 function destructureExpression(
   exp: string
@@ -124,15 +131,15 @@ function doTheMath(exp: string): number {
 }
 
 /**
- * Solves expression in a bigger expression based on the regular expression
+ * Solves expressions in a bigger expression based on the regular expression
  * passed in.
  *
  * @param exp - The whole expression.
- * @param targetExpressionRegExp - The regular expressions that matches the
+ * @param targetExpressionRegExp - The regular expression that matches the
  * smaller expressions that need to be solved.
  * @returns - An expression with the required expressions solved.
  *
- * For example, suppose `multiplicationRegExp` is an expression that matches multiplications expressions like 8x5.
+ * For example, suppose `multiplicationRegExp` is an expression that matches multiplications expressions like 8x5:
  * @example
  * const additions = solveExpressions("1+1+2x7", multiplicationRegExp);
  * // -> additions is "1+2+14"
