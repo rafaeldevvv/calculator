@@ -84,25 +84,43 @@ function solveExpressions(exp, targetExpressionRegExp) {
     return exp;
 }
 const tooBigNumber = /(\d{16,})/, multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/;
+const errorTests = [
+    {
+        test: tooBigNumber,
+        message: "Number is too big: '*'",
+        ErrorConstructor: RangeError,
+    },
+    {
+        test: multipleOperators,
+        message: "You cannot put multiple operators together: '*'",
+        ErrorConstructor: SyntaxError,
+    },
+    {
+        test: multipleDots,
+        message: "Invalid expression: '*'",
+        ErrorConstructor: SyntaxError,
+    },
+    {
+        test: missingOperand,
+        message: "You forgot a number in '*'",
+        ErrorConstructor: SyntaxError,
+    },
+    {
+        test: invalidDot,
+        message: "`Invalid dot: '*`",
+        ErrorConstructor: SyntaxError,
+    },
+    {
+        test: invalidDotAlone,
+        message: "`Invalid dot: '*`",
+        ErrorConstructor: SyntaxError,
+    },
+];
 function checkValidity(exp) {
-    const tooBigNumberMatch = tooBigNumber.exec(exp);
-    if (tooBigNumberMatch) {
-        throw new RangeError(`Number is too big: '${tooBigNumberMatch[1]}'`);
-    }
-    const multipleOperatorsMatch = multipleOperators.exec(exp);
-    if (multipleOperatorsMatch) {
-        throw new SyntaxError(`You cannot put multiple operators together: '${multipleOperatorsMatch[1]}'`);
-    }
-    const multipleDotsMatch = multipleDots.exec(exp);
-    if (multipleDotsMatch) {
-        throw new SyntaxError(`Invalid expression: '${multipleDotsMatch[1]}'`);
-    }
-    const missingOperandMatch = missingOperand.exec(exp);
-    if (missingOperandMatch) {
-        throw new SyntaxError(`You forgot a number in '${missingOperandMatch[0]}'`);
-    }
-    const invalidDotMatch = invalidDot.exec(exp) || invalidDotAlone.exec(exp);
-    if (invalidDotMatch) {
-        throw new SyntaxError(`Invalid dot: '${invalidDotMatch[0]}'`);
-    }
+    errorTests.forEach(({ test, message, ErrorConstructor }) => {
+        const match = test.exec(exp);
+        if (match) {
+            throw new ErrorConstructor(message.replace("*", match[0]));
+        }
+    });
 }

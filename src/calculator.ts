@@ -176,31 +176,59 @@ const tooBigNumber = /(\d{16,})/,
   invalidDot = /\D\.\D/,
   invalidDotAlone = /^(\.|\.\D|\D\.)$/;
 
+/**
+ * A check for an error in a piece of text.
+ */
+interface ErrorCheck {
+  /** A regular expression matching an error in a piece of text. */
+  test: RegExp;
+  /** 
+   * The message to show the user when the error occurs. The first star character (`'*'`) in this message
+   * is replaced by the part of the text that matches the error.
+   */
+  message: string;
+  /** The construct to construct the error. */
+  ErrorConstructor: typeof Error;
+}
+
+const errorTests: ErrorCheck[] = [
+  {
+    test: tooBigNumber,
+    message: "Number is too big: '*'",
+    ErrorConstructor: RangeError,
+  },
+  {
+    test: multipleOperators,
+    message: "You cannot put multiple operators together: '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: multipleDots,
+    message: "Invalid expression: '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: missingOperand,
+    message: "You forgot a number in '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: invalidDot,
+    message: "`Invalid dot: '*`",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: invalidDotAlone,
+    message: "`Invalid dot: '*`",
+    ErrorConstructor: SyntaxError,
+  },
+];
+
 function checkValidity(exp: string) {
-  const tooBigNumberMatch = tooBigNumber.exec(exp);
-  if (tooBigNumberMatch) {
-    throw new RangeError(`Number is too big: '${tooBigNumberMatch[1]}'`);
-  }
-
-  const multipleOperatorsMatch = multipleOperators.exec(exp);
-  if (multipleOperatorsMatch) {
-    throw new SyntaxError(
-      `You cannot put multiple operators together: '${multipleOperatorsMatch[1]}'`
-    );
-  }
-
-  const multipleDotsMatch = multipleDots.exec(exp);
-  if (multipleDotsMatch) {
-    throw new SyntaxError(`Invalid expression: '${multipleDotsMatch[1]}'`);
-  }
-
-  const missingOperandMatch = missingOperand.exec(exp);
-  if (missingOperandMatch) {
-    throw new SyntaxError(`You forgot a number in '${missingOperandMatch[0]}'`);
-  }
-
-  const invalidDotMatch = invalidDot.exec(exp) || invalidDotAlone.exec(exp);
-  if (invalidDotMatch) {
-    throw new SyntaxError(`Invalid dot: '${invalidDotMatch[0]}'`);
-  }
+  errorTests.forEach(({ test, message, ErrorConstructor }) => {
+    const match = test.exec(exp);
+    if (match) {
+      throw new ErrorConstructor(message.replace("*", match[0]));
+    }
+  });
 }
