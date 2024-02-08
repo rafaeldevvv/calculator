@@ -26,11 +26,11 @@ Users should be able to:
 - Flexbox
 - CSS Grid
 - Mobile-first workflow
-- [React](https://reactjs.org/) - JS library
+- [TypeScript](https://www.typescriptlang.org)
 
 ## About Project
 
-If you look at the code, you'll realize that instead of just replacing characters and passing a javascript math expression string to `Function` or `eval`, i chose to parse the expression because I wanted a real challenge. 
+If you look at the code, you'll realize that instead of just replacing characters and passing a javascript math expression string to `Function` or `eval`, i chose to parse the expression because I wanted a real challenge.
 
 I thought that because I have already made more complex projects, a calculator would be too easy and it really was even increasing the difficulty by with actual parsing.
 
