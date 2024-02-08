@@ -15,6 +15,8 @@ Users should be able to:
 
 ### Links
 
+- [Live site](https://rafaeldevvv.github.io/calculator)
+
 ### Screenshots
 
 ### Built with
@@ -26,4 +28,16 @@ Users should be able to:
 - Mobile-first workflow
 - [React](https://reactjs.org/) - JS library
 
+## About Project
+
+If you look at the code, you'll realize that instead of just replacing characters and passing a javascript math expression string to `Function` or `eval`, i chose to parse the expression because I wanted a real challenge. 
+
+I thought that because I have already made more complex projects, a calculator would be too easy and it really was even increasing the difficulty by with actual parsing.
+
+It was a fun project. I could have finished it quicker, but I spent some time reading some interesting articles about some javascript concepts.
+
 ## Author
+
+The name's Rafael Maia. You can find me on [Instagram](https://www.instagram.com/rafaeldevvv), [X](https://www.twitter.com/rafaeldevvv), and [Linkedin](https://www.linkedin.com/in/rafael-maia-b69662263). Or you can send me an email [rafaeldeveloperr@gmail.com](mailto:rafaeldeveloperr@gmail.com).
+
+I am a freelancer, so you can also find me on [Fiverr](https://www.fiverr.com/rafael787) and [Upwork](https://www.upwork.com/freelancers/~01a4dc9692c96839dc).
