@@ -1,6 +1,15 @@
 import announce from "./custom-alert.js";
+import { announcePolitely } from "./visually-hidden-announcer.js";
 
 let expression = "";
+
+function announceExpression() {
+  if (expression) {
+    announcePolitely(`Current expression is ${expression}`);
+  } else {
+    announcePolitely("Expression is empty");
+  }
+}
 
 const calculator = document.querySelector(".calculator") as HTMLElement,
   /* 
@@ -21,6 +30,7 @@ function updateCalculatorExpression(exp: string) {
 function deleteLastCharacter() {
   expression = expression.slice(0, expression.length - 1);
   updateCalculatorExpression(expression);
+  announceExpression();
 }
 
 symbolKeys.forEach((k) => {
@@ -28,12 +38,14 @@ symbolKeys.forEach((k) => {
   k.addEventListener("click", () => {
     expression += symbol;
     updateCalculatorExpression(expression);
+    announceExpression();
   });
 });
 
 resetKey.addEventListener("click", () => {
   expression = "";
   updateCalculatorExpression(expression);
+  announceExpression();
 });
 
 delKey.addEventListener("click", deleteLastCharacter);
@@ -50,6 +62,7 @@ function getResult() {
     const result = doTheMath(expression);
     expression = result.toString();
     updateCalculatorExpression(expression);
+    announcePolitely(`The result is ${result}`);
   } catch (err) {
     announce(err as any);
   }
@@ -182,7 +195,7 @@ const tooBigNumber = /(\d{16,})/,
 interface ErrorCheck {
   /** A regular expression matching an error in a piece of text. */
   test: RegExp;
-  /** 
+  /**
    * The message to show the user when the error occurs. The first star character (`'*'`) in this message
    * is replaced by the part of the text that matches the error.
    */

@@ -1,5 +1,14 @@
 import announce from "./custom-alert.js";
+import { announcePolitely } from "./visually-hidden-announcer.js";
 let expression = "";
+function announceExpression() {
+    if (expression) {
+        announcePolitely(`Current expression is ${expression}`);
+    }
+    else {
+        announcePolitely("Expression is empty");
+    }
+}
 const calculator = document.querySelector(".calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionNode = calculator.querySelector(".js-expression");
 function updateCalculatorExpression(exp) {
     expressionNode.textContent = exp;
@@ -8,17 +17,20 @@ function updateCalculatorExpression(exp) {
 function deleteLastCharacter() {
     expression = expression.slice(0, expression.length - 1);
     updateCalculatorExpression(expression);
+    announceExpression();
 }
 symbolKeys.forEach((k) => {
     const symbol = k.getAttribute("data-symbol");
     k.addEventListener("click", () => {
         expression += symbol;
         updateCalculatorExpression(expression);
+        announceExpression();
     });
 });
 resetKey.addEventListener("click", () => {
     expression = "";
     updateCalculatorExpression(expression);
+    announceExpression();
 });
 delKey.addEventListener("click", deleteLastCharacter);
 window.addEventListener("keydown", (e) => {
@@ -33,6 +45,7 @@ function getResult() {
         const result = doTheMath(expression);
         expression = result.toString();
         updateCalculatorExpression(expression);
+        announcePolitely(`The result is ${result}`);
     }
     catch (err) {
         announce(err);
