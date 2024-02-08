@@ -22,8 +22,10 @@ export default function announce(
   const customAlert = createAlert(announcement.toString());
   document.body.appendChild(customAlert);
 
+  const animationDuration = Math.min(0.1 * time, 300);
+
   const animationOptions = {
-    duration: 0.05 * time,
+    duration: animationDuration,
     iterations: 1,
     fill: "both",
   } as const;
@@ -34,7 +36,7 @@ export default function announce(
       customAlert.remove();
     });
     currentTimeout = undefined;
-  }, time * 0.8);
+  }, time - animationDuration);
 }
 
 function fadeInDown(element: HTMLElement, options?: KeyframeAnimationOptions) {

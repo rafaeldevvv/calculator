@@ -12,8 +12,9 @@ export default function announce(announcement, options) {
     (_a = document.querySelector("[role=alert]")) === null || _a === void 0 ? void 0 : _a.remove();
     const customAlert = createAlert(announcement.toString());
     document.body.appendChild(customAlert);
+    const animationDuration = Math.min(0.1 * time, 300);
     const animationOptions = {
-        duration: 0.05 * time,
+        duration: animationDuration,
         iterations: 1,
         fill: "both",
     };
@@ -23,7 +24,7 @@ export default function announce(announcement, options) {
             customAlert.remove();
         });
         currentTimeout = undefined;
-    }, time * 0.8);
+    }, time - animationDuration);
 }
 function fadeInDown(element, options) {
     element.animate([
