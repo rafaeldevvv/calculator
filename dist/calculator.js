@@ -14,7 +14,7 @@ function updateCalculatorExpression(exp) {
     expressionNode.textContent = exp;
     expressionNode.scrollLeft = expressionNode.scrollWidth;
 }
-function deleteLastCharacter() {
+function deleteLastSymbol() {
     expression = expression.slice(0, expression.length - 1);
     updateCalculatorExpression(expression);
     announceExpression();
@@ -22,6 +22,9 @@ function deleteLastCharacter() {
 symbolKeys.forEach((k) => {
     const symbol = k.getAttribute("data-symbol");
     k.addEventListener("click", () => {
+        if (expression.includes("NaN") || expression.includes("Infinity")) {
+            expression = "";
+        }
         expression += symbol;
         updateCalculatorExpression(expression);
         announceExpression();
@@ -32,10 +35,10 @@ resetKey.addEventListener("click", () => {
     updateCalculatorExpression(expression);
     announceExpression();
 });
-delKey.addEventListener("click", deleteLastCharacter);
+delKey.addEventListener("click", deleteLastSymbol);
 window.addEventListener("keydown", (e) => {
     if (e.key === "Backspace")
-        deleteLastCharacter();
+        deleteLastSymbol();
 });
 resultKey.addEventListener("click", getResult);
 function getResult() {
@@ -96,7 +99,7 @@ function solveExpressions(exp, targetExpressionRegExp) {
     }
     return exp;
 }
-const tooBigNumber = /(\d{16,})/, multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/;
+const tooBigNumber = /(\d{16,})/, multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidExpression = /NaN|Infinity/;
 const errorTests = [
     {
         test: tooBigNumber,
@@ -120,12 +123,17 @@ const errorTests = [
     },
     {
         test: invalidDot,
-        message: "`Invalid dot: '*`",
+        message: "Invalid dot: '*'",
         ErrorConstructor: SyntaxError,
     },
     {
         test: invalidDotAlone,
-        message: "`Invalid dot: '*`",
+        message: "Invalid dot: '*'",
+        ErrorConstructor: SyntaxError,
+    },
+    {
+        test: invalidExpression,
+        message: "Invalid expression: '*'",
         ErrorConstructor: SyntaxError,
     },
 ];

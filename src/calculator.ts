@@ -27,7 +27,7 @@ function updateCalculatorExpression(exp: string) {
   expressionNode.scrollLeft = expressionNode.scrollWidth;
 }
 
-function deleteLastCharacter() {
+function deleteLastSymbol() {
   expression = expression.slice(0, expression.length - 1);
   updateCalculatorExpression(expression);
   announceExpression();
@@ -36,6 +36,9 @@ function deleteLastCharacter() {
 symbolKeys.forEach((k) => {
   const symbol = k.getAttribute("data-symbol");
   k.addEventListener("click", () => {
+    if (expression.includes("NaN") || expression.includes("Infinity")) {
+      expression = "";
+    }
     expression += symbol;
     updateCalculatorExpression(expression);
     announceExpression();
@@ -48,10 +51,10 @@ resetKey.addEventListener("click", () => {
   announceExpression();
 });
 
-delKey.addEventListener("click", deleteLastCharacter);
+delKey.addEventListener("click", deleteLastSymbol);
 
 window.addEventListener("keydown", (e) => {
-  if (e.key === "Backspace") deleteLastCharacter();
+  if (e.key === "Backspace") deleteLastSymbol();
 });
 
 resultKey.addEventListener("click", getResult);
@@ -187,7 +190,8 @@ const tooBigNumber = /(\d{16,})/,
   multipleDots = /(\.{2,})/,
   missingOperand = /(\d+[-+÷x])$/,
   invalidDot = /\D\.\D/,
-  invalidDotAlone = /^(\.|\.\D|\D\.)$/;
+  invalidDotAlone = /^(\.|\.\D|\D\.)$/,
+  invalidExpression = /NaN|Infinity/;
 
 /**
  * A check for an error in a piece of text.
@@ -227,12 +231,17 @@ const errorTests: ErrorCheck[] = [
   },
   {
     test: invalidDot,
-    message: "`Invalid dot: '*`",
+    message: "Invalid dot: '*'",
     ErrorConstructor: SyntaxError,
   },
   {
     test: invalidDotAlone,
-    message: "`Invalid dot: '*`",
+    message: "Invalid dot: '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: invalidExpression,
+    message: "Invalid expression: '*'",
     ErrorConstructor: SyntaxError,
   },
 ];
