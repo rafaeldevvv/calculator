@@ -99,7 +99,8 @@ function solveExpressions(exp, targetExpressionRegExp) {
     }
     return exp;
 }
-const tooBigNumber = /(\d{16,})/, multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidExpression = /NaN|Infinity/;
+const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
+const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}`), multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidExpression = /NaN|Infinity/;
 const errorTests = [
     {
         test: tooBigNumber,

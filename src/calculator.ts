@@ -185,7 +185,8 @@ function solveExpressions(exp: string, targetExpressionRegExp: RegExp) {
   return exp;
 }
 
-const tooBigNumber = /(\d{16,})/,
+const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
+const tooBigNumber = new RegExp(String.raw`\d{${maxNumberLength + 1},}`),
   multipleOperators = /([-+÷x]{2,})/,
   multipleDots = /(\.{2,})/,
   missingOperand = /(\d+[-+÷x])$/,
