@@ -54,18 +54,19 @@ function getResult() {
         announce(err);
     }
 }
-const operators = ["+", "-", "x", "÷"];
+const operators = ["+", "-", "x", "÷", "^"];
 const operatorsFunctions = {
     x: (a, b) => a * b,
     "+": (a, b) => a + b,
     "-": (a, b) => a - b,
     "÷": (a, b) => a / b,
+    "^": Math.pow,
 };
 const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/, onlyNumber = /^(([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+))$/;
 function expRegExp(operatorCharacterClass) {
     return new RegExp(`(${number.source})(${operatorCharacterClass})(${number.source})`);
 }
-const firstExps = expRegExp("[x÷]"), secondExps = expRegExp("[-+]");
+const firstExps = expRegExp("[\\^]"), secondExps = expRegExp("[x÷]"), thirdExps = expRegExp("[-+]");
 function destructureExpression(exp) {
     const firstTermMatch = number.exec(exp), term1 = firstTermMatch[0], rest = exp.slice(term1.length), operator = rest[0], term2 = rest.slice(1);
     return [Number(term1), operator, Number(term2)];
@@ -77,6 +78,7 @@ function doTheMath(exp) {
     }
     exp = solveExpressions(exp, firstExps);
     exp = solveExpressions(exp, secondExps);
+    exp = solveExpressions(exp, thirdExps);
     return Number(exp);
 }
 function solveExpressions(exp, targetExpressionRegExp) {
@@ -86,6 +88,8 @@ function solveExpressions(exp, targetExpressionRegExp) {
             break;
         const expression = match[0], { index } = match;
         const [term1, operator, term2] = destructureExpression(expression);
+        console.log(term1, operator, term2);
+        console.log(targetExpressionRegExp.source);
         const operatorFunc = operatorsFunctions[operator], result = operatorFunc(term1, term2);
         if (exp.length === expression.length) {
             exp = result.toString();
@@ -100,7 +104,7 @@ function solveExpressions(exp, targetExpressionRegExp) {
     return exp;
 }
 const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}`), multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidExpression = /NaN|Infinity/, singleOperator = /^[-+÷x]$/;
+const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}`), multipleOperators = /([-+÷x^]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x^])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidExpression = /NaN|Infinity/, singleOperator = /^[-+÷x^]$/;
 const errorTests = [
     {
         test: tooBigNumber,

@@ -71,7 +71,7 @@ function getResult() {
   }
 }
 
-const operators = ["+", "-", "x", "÷"] as const;
+const operators = ["+", "-", "x", "÷", "^"] as const;
 type Operator = (typeof operators)[number];
 
 const operatorsFunctions = {
@@ -79,6 +79,7 @@ const operatorsFunctions = {
   "+": (a: number, b: number) => a + b,
   "-": (a: number, b: number) => a - b,
   "÷": (a: number, b: number) => a / b,
+  "^": Math.pow,
 } as const;
 
 const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/,
@@ -105,8 +106,9 @@ function expRegExp(operatorCharacterClass: string) {
 /*
 These defines precedence. Multiplication and division are 
 performed first. Then addition and subtraction. */
-const firstExps = expRegExp("[x÷]"),
-  secondExps = expRegExp("[-+]");
+const firstExps = expRegExp("[\\^]"),
+  secondExps = expRegExp("[x÷]"),
+  thirdExps = expRegExp("[-+]");
 
 /**
  * Destructures a simple mathematical expression like 1+5.
@@ -142,6 +144,7 @@ function doTheMath(exp: string): number {
 
   exp = solveExpressions(exp, firstExps);
   exp = solveExpressions(exp, secondExps);
+  exp = solveExpressions(exp, thirdExps);
 
   return Number(exp);
 }
@@ -155,7 +158,8 @@ function doTheMath(exp: string): number {
  * smaller expressions that need to be solved.
  * @returns - An expression with the required expressions solved.
  *
- * For example, suppose `multiplicationRegExp` is an expression that matches multiplications expressions like 8x5:
+ * For example, suppose `multiplicationRegExp` is an expression that matches
+ * multiplications expressions like 8x5:
  * @example
  * const additions = solveExpressions("1+1+2x7", multiplicationRegExp);
  * // -> additions is "1+2+14"
@@ -167,6 +171,8 @@ function solveExpressions(exp: string, targetExpressionRegExp: RegExp) {
     const expression = match[0],
       { index } = match;
     const [term1, operator, term2] = destructureExpression(expression);
+    console.log(term1, operator, term2);
+    console.log(targetExpressionRegExp.source);
 
     const operatorFunc = operatorsFunctions[operator as Operator],
       result = operatorFunc(term1, term2);
@@ -187,13 +193,13 @@ function solveExpressions(exp: string, targetExpressionRegExp: RegExp) {
 
 const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
 const tooBigNumber = new RegExp(String.raw`\d{${maxNumberLength + 1},}`),
-  multipleOperators = /([-+÷x]{2,})/,
+  multipleOperators = /([-+÷x^]{2,})/,
   multipleDots = /(\.{2,})/,
-  missingOperand = /(\d+[-+÷x])$/,
+  missingOperand = /(\d+[-+÷x^])$/,
   invalidDot = /\D\.\D/,
   invalidDotAlone = /^(\.|\.\D|\D\.)$/,
   invalidExpression = /NaN|Infinity/,
-  singleOperator = /^[-+÷x]$/;
+  singleOperator = /^[-+÷x^]$/;
 
 /**
  * A check for an error in a piece of text.
