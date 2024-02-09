@@ -1,5 +1,10 @@
 "use strict";
-const themes = ["theme-blue", "theme-white", "theme-purple"];
+const themes = [
+    "theme-blue",
+    "theme-white",
+    "theme-purple",
+    "default-theme",
+];
 const body = document.body;
 function removeTheme() {
     themes.forEach((t) => {
@@ -11,8 +16,16 @@ function setTheme(t) {
     body.classList.add(t);
     localStorage.setItem("calculator-theme", t);
 }
-const initialTheme = (localStorage.getItem("calculator-theme") ||
-    "theme-blue");
+let initialTheme = localStorage.getItem("calculator-theme");
+if (initialTheme === null) {
+    const lightMatch = matchMedia("(prefers-color-scheme: light)");
+    if (lightMatch.matches) {
+        initialTheme = "theme-white";
+    }
+    else {
+        initialTheme = "theme-purple";
+    }
+}
 const radios = document.querySelectorAll(".theme-radio");
 setTheme(initialTheme);
 radios.forEach((r) => {

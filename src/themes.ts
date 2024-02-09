@@ -1,4 +1,9 @@
-const themes = ["theme-blue", "theme-white", "theme-purple"] as const;
+const themes = [
+  "theme-blue",
+  "theme-white",
+  "theme-purple",
+  "default-theme",
+] as const;
 type Theme = (typeof themes)[number];
 
 const body = document.body;
@@ -15,16 +20,24 @@ function setTheme(t: Theme) {
   localStorage.setItem("calculator-theme", t);
 }
 
-const initialTheme = (localStorage.getItem("calculator-theme") ||
-  "theme-blue") as Theme;
+let initialTheme = localStorage.getItem("calculator-theme");
+if (initialTheme === null) {
+  const lightMatch = matchMedia("(prefers-color-scheme: light)");
+  if (lightMatch.matches) {
+    initialTheme = "theme-white";
+  } else {
+    initialTheme = "theme-purple";
+  }
+}
+
 const radios: NodeListOf<HTMLInputElement> =
   document.querySelectorAll(".theme-radio");
 
-setTheme(initialTheme);
+setTheme(initialTheme as Theme);
 radios.forEach((r) => {
   if (r.value === initialTheme) r.checked = true;
   else r.checked = false;
-  
+
   r.addEventListener("change", changeTheme);
 });
 
