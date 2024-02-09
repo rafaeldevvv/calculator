@@ -192,7 +192,8 @@ const tooBigNumber = new RegExp(String.raw`\d{${maxNumberLength + 1},}`),
   missingOperand = /(\d+[-+÷x])$/,
   invalidDot = /\D\.\D/,
   invalidDotAlone = /^(\.|\.\D|\D\.)$/,
-  invalidExpression = /NaN|Infinity/;
+  invalidExpression = /NaN|Infinity/,
+  singleOperator = /^[-+÷x]$/;
 
 /**
  * A check for an error in a piece of text.
@@ -243,6 +244,11 @@ const errorTests: ErrorCheck[] = [
   {
     test: invalidExpression,
     message: "Invalid expression: '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: singleOperator,
+    message: "You forgot the numbers for '*'",
     ErrorConstructor: SyntaxError,
   },
 ];

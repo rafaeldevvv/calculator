@@ -100,7 +100,7 @@ function solveExpressions(exp, targetExpressionRegExp) {
     return exp;
 }
 const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}`), multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidExpression = /NaN|Infinity/;
+const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}`), multipleOperators = /([-+÷x]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidExpression = /NaN|Infinity/, singleOperator = /^[-+÷x]$/;
 const errorTests = [
     {
         test: tooBigNumber,
@@ -135,6 +135,11 @@ const errorTests = [
     {
         test: invalidExpression,
         message: "Invalid expression: '*'",
+        ErrorConstructor: SyntaxError,
+    },
+    {
+        test: singleOperator,
+        message: "You forgot the numbers for '*'",
         ErrorConstructor: SyntaxError,
     },
 ];
