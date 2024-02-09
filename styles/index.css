@@ -101,6 +101,9 @@
 /* 
    javascript handles the default theme
    this is just in case js doesn't load
+   or is disabled
+   but if js is not available the whole 
+   page loses its purpose
 */
 @media (prefers-color-scheme: light) {
    .default-theme {
