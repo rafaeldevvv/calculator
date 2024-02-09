@@ -285,7 +285,7 @@ input[type=radio] {
    display: grid
 }
 
-.grid-span-2-col {
+.col-span-2 {
    grid-column: span 2;
 }
 
