@@ -83,7 +83,8 @@ const operatorsFunctions = {
 } as const;
 
 const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/,
-  onlyNumber = /^(([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+))$/;
+  onlyNumber = /^(([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+))$/,
+  bracketExpression = /\([-+÷x^.\d]+\)/;
 
 /**
  * Builds a mathematical expression regular expression.
@@ -110,6 +111,8 @@ const firstExps = expRegExp("[\\^]"),
   secondExps = expRegExp("[x÷]"),
   thirdExps = expRegExp("[-+]");
 
+const precedenceRules = [firstExps, secondExps, thirdExps];
+
 /**
  * Destructures a simple mathematical expression like 1+5.
  *
@@ -135,6 +138,44 @@ function destructureExpression(
   return [Number(term1), operator, Number(term2)];
 }
 
+/**
+ * Inserts a string into another string, optionally deleting
+ * characters where it is inserted.
+ *
+ * @param targetString - The string to insert the other string in.
+ * @param start - Where to start adding the new string.
+ * @param deleteCount - How many characters to delete where the string is inserted.
+ * @param insertedString - The string to be inserted.
+ * @returns - A string with the new string string added, optionally with characters removed.
+ *
+ * @example
+ * const cdog = spliceString("cat", 1, 2, "dog");
+ * console.log(cdog);
+ * // -> "cdog"
+ */
+function spliceString(
+  targetString: string,
+  start: number,
+  deleteCount: number,
+  insertedString: string
+) {
+  if (start < 0) {
+    start = targetString.length + start;
+    if (start < 0) start = 0;
+  }
+
+  return (
+    targetString.slice(0, start) +
+    insertedString +
+    targetString.slice(start + deleteCount)
+  );
+}
+
+/**
+ * Solves a mathematical expression.
+ *
+ * @returns - The result of the calculations.
+ */
 function doTheMath(exp: string): number {
   checkValidity(exp);
 
@@ -142,11 +183,41 @@ function doTheMath(exp: string): number {
     return Number(exp);
   }
 
-  exp = solveExpressions(exp, firstExps);
-  exp = solveExpressions(exp, secondExps);
-  exp = solveExpressions(exp, thirdExps);
+  exp = addMultiplicationSignsBetweenOppositeBrackets(exp);
+
+  while (exp.includes("(")) {
+    const bracketExpressionMatch = bracketExpression.exec(exp)!,
+      { index } = bracketExpressionMatch,
+      bracketExpressionString = bracketExpressionMatch[0],
+      matchLength = bracketExpressionString.length,
+      innerExp = bracketExpressionString.slice(1, matchLength - 1);
+
+    const result = doTheMath(innerExp).toString();
+    exp = spliceString(exp, index, matchLength, result);
+    exp = fixSigns(exp);
+  }
+
+  if (onlyNumber.test(exp)) {
+    return Number(exp);
+  }
+
+  exp = precedenceRules.reduce(solveExpressions, exp);
 
   return Number(exp);
+}
+
+function addMultiplicationSignsBetweenOppositeBrackets(exp: string) {
+  exp = exp.replaceAll(")(", ")x(");
+  exp = exp.replace(/(\d)\(/g, "$1x(");
+  return exp.replaceAll(")(", ")x(");
+}
+
+function fixSigns(exp: string) {
+  exp = exp.replaceAll("+-", "-");
+  exp = exp.replaceAll("-+", "-");
+  exp = exp.replaceAll("--", "+");
+  exp = exp.replaceAll("++", "+");
+  return exp;
 }
 
 /**
@@ -171,8 +242,6 @@ function solveExpressions(exp: string, targetExpressionRegExp: RegExp) {
     const expression = match[0],
       { index } = match;
     const [term1, operator, term2] = destructureExpression(expression);
-    console.log(term1, operator, term2);
-    console.log(targetExpressionRegExp.source);
 
     const operatorFunc = operatorsFunctions[operator as Operator],
       result = operatorFunc(term1, term2);
@@ -198,9 +267,11 @@ const tooBigNumber = new RegExp(String.raw`\d{${maxNumberLength + 1},}`),
   missingOperand = /(\d+[-+÷x^])$/,
   invalidDot = /\D\.\D/,
   invalidDotAlone = /^(\.|\.\D|\D\.)$/,
-  invalidExpression = /NaN|Infinity/,
-  singleOperator = /^[-+÷x^]$/;
-
+  invalidNaNOrInfinity = /NaN|Infinity/,
+  singleOperator = /^[-+÷x^]$/,
+  emptyParenthesis = /\(\)/,
+  singleBracket = /^(\(|\))$/,
+  operatorAndBracket = /[-+÷x^]\)|\([x÷^]/;
 /**
  * A check for an error in a piece of text.
  */
@@ -248,7 +319,7 @@ const errorTests: ErrorCheck[] = [
     ErrorConstructor: SyntaxError,
   },
   {
-    test: invalidExpression,
+    test: invalidNaNOrInfinity,
     message: "Invalid expression: '*'",
     ErrorConstructor: SyntaxError,
   },
@@ -257,7 +328,54 @@ const errorTests: ErrorCheck[] = [
     message: "You forgot the numbers for '*'",
     ErrorConstructor: SyntaxError,
   },
+  {
+    test: emptyParenthesis,
+    message: "Empty parenthesis are not allowed: '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: singleBracket,
+    message: "Invalid bracket: '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: operatorAndBracket,
+    message: "Invalid operator and bracket combination: '*'",
+    ErrorConstructor: SyntaxError,
+  },
 ];
+
+/**
+ * Checks if all parenthesis, if present, in an expression are opened and closed properly.
+ *
+ * @param exp - The expression.
+ * @returns - A boolen that tells whether all parenthesis are properly closed.
+ */
+function checkClosedParenthesis(exp: string): boolean {
+  let open = 0,
+    /* 
+    need this flag because if the first bracket in the expression
+    is a closing parenthesis, then open will be zero and the
+    algorithm fails, returning true when the expression is invalid
+    */
+    valid = true;
+
+  for (const ch of exp) {
+    if (ch === "(") {
+      open++;
+    } else if (ch === ")") {
+      if (open > 0) {
+        open--;
+      } else {
+        //
+        valid = false;
+        break;
+      }
+    }
+  }
+
+  return valid && open === 0;
+}
 
 function checkValidity(exp: string) {
   errorTests.forEach(({ test, message, ErrorConstructor }) => {
@@ -266,4 +384,11 @@ function checkValidity(exp: string) {
       throw new ErrorConstructor(message.replace("*", match[0]));
     }
   });
+
+  const correctlyParenthesized = checkClosedParenthesis(exp);
+  if (!correctlyParenthesized) {
+    throw new SyntaxError(
+      "You forgot to close or open some parenthesis properly"
+    );
+  }
 }
