@@ -14,7 +14,7 @@ export default function announce(
     time: number;
   }
 ) {
-  const { time = 15000 } = options || {};
+  const { time = 12000 } = options || {};
 
   clearTimeout(currentTimeout);
   document.querySelector("[role=alert]")?.remove();

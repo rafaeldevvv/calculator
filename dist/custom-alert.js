@@ -7,7 +7,7 @@ export function createAlert(announcement) {
 let currentTimeout;
 export default function announce(announcement, options) {
     var _a;
-    const { time = 15000 } = options || {};
+    const { time = 12000 } = options || {};
     clearTimeout(currentTimeout);
     (_a = document.querySelector("[role=alert]")) === null || _a === void 0 ? void 0 : _a.remove();
     const customAlert = createAlert(announcement.toString());
