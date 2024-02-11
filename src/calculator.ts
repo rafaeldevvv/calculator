@@ -261,7 +261,10 @@ function solveExpressions(exp: string, targetExpressionRegExp: RegExp) {
 }
 
 const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(String.raw`\d{${maxNumberLength + 1},}`),
+const tooBigNumber = new RegExp(
+    String.raw`\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`
+    // if there's an 'e' in the expression then we're messing with really big numbers already
+  ),
   multipleOperators = /([-+÷x^]{2,})/,
   multipleDots = /(\.{2,})/,
   missingOperand = /(\d+[-+÷x^])$/,
