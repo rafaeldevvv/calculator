@@ -11,7 +11,7 @@ function announceExpression() {
   }
 }
 
-const calculator = document.querySelector(".calculator") as HTMLElement,
+const calculator = document.querySelector(".js-calculator") as HTMLElement,
   /* 
     all nodes that have a data-symbol attribute 
     are used to add a symbol to the expression 

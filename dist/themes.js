@@ -26,7 +26,7 @@ if (initialTheme === null) {
         initialTheme = "theme-purple";
     }
 }
-const radios = document.querySelectorAll(".theme-radio");
+const radios = document.querySelectorAll(".js-theme-radio");
 setTheme(initialTheme);
 radios.forEach((r) => {
     if (r.value === initialTheme)

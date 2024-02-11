@@ -31,7 +31,7 @@ if (initialTheme === null) {
 }
 
 const radios: NodeListOf<HTMLInputElement> =
-  document.querySelectorAll(".theme-radio");
+  document.querySelectorAll(".js-theme-radio");
 
 setTheme(initialTheme as Theme);
 radios.forEach((r) => {
