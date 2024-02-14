@@ -165,10 +165,15 @@ button {
    display: block;
    border: 0;
    cursor: pointer;
+   background-color: transparent;
 }
 
 input[type=radio] {
    cursor: pointer;
+}
+
+ul {
+   list-style-type: none;
 }
 
 /* remove animations for people who've turned them off */
@@ -297,6 +302,21 @@ input[type=radio] {
    row-gap: .25rem;
 }
 
+.mt-1 {
+   margin-top: 0.5rem;
+}
+
+.mt-2 {
+   margin-top: 1rem;
+}
+
+.mt-3 {
+   margin-top: 1.5rem;
+}
+
+.mt-4 {
+   margin-top: 2rem;
+}
 
 .mb-1 {
    margin-bottom: 0.5rem;
@@ -378,6 +398,14 @@ input[type=radio] {
    position: absolute;
 }
 
+.absolute {
+   position: absolute;
+}
+
+.relative {
+   position: relative;
+}
+
 .brighter-selected {
    z-index: 1;
    position: relative;
@@ -395,6 +423,26 @@ input[type=radio] {
    z-index: -1;
    -webkit-backdrop-filter: brightness(var(--selected-brightness, 1.5));
    backdrop-filter: brightness(var(--selected-brightness, 1.5));
+}
+
+.block {
+   display: block;
+}
+
+.text-left {
+   text-align: left;
+}
+
+.text-right {
+   text-align: right;
+}
+
+.text-center {
+   text-align: center;
+}
+
+.flow>*+* {
+   margin-top: var(--flow-space, 1rem);
 }
 
 /* ===================== components ======================== */
@@ -444,6 +492,7 @@ input[type=radio] {
    text-wrap: nowrap;
    overflow-x: overlay;
    overflow-y: hidden;
+   padding-inline: 3.5rem 1rem;
 
    scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
 }
@@ -458,6 +507,106 @@ input[type=radio] {
 
 .expression::-webkit-scrollbar-track {
    background-color: var(--scrollbar-bg);
+}
+
+.history-btn {
+   outline: 0;
+}
+
+.history-btn::before {
+   content: '';
+   display: block;
+   inset: 0;
+   position: absolute;
+   border-radius: 50%;
+}
+
+.history-btn::after {
+   content: '';
+   display: block;
+   inset: 0;
+   position: absolute;
+   border-radius: 50%;
+   transform: scale(2);
+   background-color: hsl(var(--c-tertiary));
+   z-index: -1;
+}
+
+.history-btn:hover::before,
+.history-btn:focus-visible::before {
+   background-color: hsl(0 50% 100% /.2);
+   transform: scale(2);
+}
+
+.history-btn:active {
+   transform: scale(.8);
+}
+
+.history-btn[aria-expanded="false"]+* {
+   display: none;
+}
+
+.menu-parent {
+   top: 50%;
+   transform: translateY(-50%);
+   left: 1rem;
+
+   z-index: 900;
+}
+
+.history-menu-container {
+   box-shadow: 0 0 20px hsl(0 0% 0% / .5);
+   top: 140%;
+   background-color: hsl(var(--c-primary));
+   padding: 1.5rem 1rem;
+   border: 1px solid hsl(var(--c-text-primary));
+   width: min(23rem, 80vw);
+   max-height: 20rem;
+   overflow-y: scroll;
+
+   --scrollbar-fg: hsl(var(--c-text-primary) / .4);
+   --scrollbar-bg: transparent;
+
+   scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
+}
+
+.history-menu-container::-webkit-scrollbar {
+   width: .6rem;
+}
+
+.history-menu-container::-webkit-scrollbar-track {
+   background-color: var(--scrollbar-bg);
+}
+
+.history-menu-container::-webkit-scrollbar-thumb {
+   background-color: var(--scrollbar-fg);
+   border-radius: .6rem;
+}
+
+.history-entry {
+   width: 100%;
+   border: 1px solid hsl(var(--c-text-primary) / .3);
+   padding-block: .5rem;
+   text-transform: capitalize;
+   background-color: hsl(var(--c-primary));
+
+   transition-property: color, background-color;
+   transition-duration: 300ms;
+   transition-timing-function: ease;
+}
+
+.history-entry__expression,
+.history-entry__result {
+   width: 100%;
+   text-wrap: nowrap;
+   text-overflow: ellipsis;
+   overflow: hidden;
+}
+
+.history-entry:hover,
+.history-entry:focus-visible {
+   background-color: hsl(var(--c-text-primary));
+   color: hsl(var(--c-primary));
 }
 
 /* ====================== radio buttons ============================= */

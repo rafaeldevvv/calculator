@@ -1,5 +1,8 @@
 import announce from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
+import managePopupMenu from "./popup-menu-manager.js";
+
+managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
 let expression = "";
 
@@ -20,11 +23,16 @@ const calculator = document.querySelector(".js-calculator") as HTMLElement,
   resetKey = calculator.querySelector(".js-reset-key") as HTMLButtonElement,
   delKey = calculator.querySelector(".js-del-key") as HTMLButtonElement,
   resultKey = calculator.querySelector(".js-result-key") as HTMLButtonElement,
-  expressionNode = calculator.querySelector(".js-expression") as HTMLElement;
+  expressionContainer = calculator.querySelector(
+    ".js-expression-container"
+  ) as HTMLElement,
+  expressionContent = calculator.querySelector(
+    ".js-expression__content"
+  ) as HTMLElement;
 
 function updateCalculatorExpression(exp: string) {
-  expressionNode.textContent = exp;
-  expressionNode.scrollLeft = expressionNode.scrollWidth;
+  expressionContent.textContent = exp;
+  expressionContainer.scrollLeft = expressionContainer.scrollWidth;
 }
 
 function deleteLastSymbol() {

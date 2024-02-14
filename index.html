@@ -16,6 +16,10 @@
 
     <script src="dist/themes.js" defer type="module"></script>
     <script src="dist/calculator.js" defer type="module"></script>
+    <script
+      src="https://kit.fontawesome.com/134d9c6f51.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body class="default-theme ff-sans">
     <main class="my-4">
@@ -64,10 +68,130 @@
           </form>
         </header>
 
+        <noscript>
+          Sorry, but this page doesn't work without javascript. Would you
+          consider turning it on?
+        </noscript>
+
         <div class="calculator js-calculator">
-          <div
-            class="expression mb-3 fs-500 text-right rounded-2 pt-3 px-2 fw-700 js-expression"
-          ></div>
+          <div class="relative mb-3">
+            <!-- history -->
+            <div class="menu-parent absolute js-menu-parent">
+              <button
+                class="history-btn text-primary fs-300"
+                aria-controls="history-menu"
+                aria-expanded="false"
+                aria-haspopup="menu"
+                id="history-btn"
+              >
+                <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+                <span class="visually-hidden">history</span>
+              </button>
+              <section
+                class="history-menu-container absolute rounded"
+                aria-labelledby="history-heading"
+              >
+                <h2 class="mb-1" id="history-heading">History</h2>
+                <p class="mb-2" id="history-description">
+                  Click to select an expression.
+                </p>
+                <!-- ========================================================== -->
+                <!-- ========================================================== -->
+                <!-- Check if the menu can be inside a div immediately after the open button -->
+                <!-- ========================================================== -->
+                <!-- ========================================================== -->
+                <ul
+                  role="menu"
+                  id="history-menu"
+                  aria-labelledby="history-heading"
+                  aria-describedby="history-description"
+                  class="history-list flow"
+                >
+                  <li role="none">
+                    <button
+                      role="menuitem"
+                      class="history-entry text-primary block text-left px-2 rounded"
+                      data-close-on-click
+                    >
+                      <span class="history-entry__expression block">
+                        <strong>expression</strong>: 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 +
+                        1 + 1 + 1 + 1 + 1
+                      </span>
+                      <span class="history-entry__result block mt-1">
+                        <strong>result</strong>:
+                        1199999999999999999999999999999999999999999999999999999999
+                      </span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button
+                      role="menuitem"
+                      class="history-entry text-primary block text-left rounded px-2"
+                      data-close-on-click
+                    >
+                      <span class="history-entry__expression block">
+                        <strong>expression</strong>: 1 + 1
+                      </span>
+                      <span class="history-entry__result block mt-1">
+                        <strong>result: 1</strong>: 11
+                      </span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button
+                      role="menuitem"
+                      class="history-entry text-primary block text-left rounded px-2"
+                      data-close-on-click
+                    >
+                      <span class="history-entry__expression block">
+                        <strong>expression</strong>: 1 + 1
+                      </span>
+                      <span class="history-entry__result block mt-1">
+                        <strong>result: 1</strong>: 11
+                      </span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button
+                      role="menuitem"
+                      class="history-entry text-primary block text-left rounded px-2"
+                      data-close-on-click
+                    >
+                      <span class="history-entry__expression block">
+                        <strong>expression</strong>: 1 + 1
+                      </span>
+                      <span class="history-entry__result block mt-1">
+                        <strong>result: 1</strong>: 11
+                      </span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button
+                      role="menuitem"
+                      class="history-entry text-primary block text-left rounded px-2"
+                      data-close-on-click
+                    >
+                      <span class="history-entry__expression block">
+                        <strong>expression</strong>: 1 + 1
+                      </span>
+                      <span class="history-entry__result block mt-1">
+                        <strong>result: 1</strong>: 11
+                      </span>
+                    </button>
+                  </li>
+                </ul>
+              </section>
+            </div>
+
+            <!-- expression -->
+            <div
+              class="expression fs-500 text-right rounded-2 pt-3 fw-700 relative js-expression-container"
+            >
+              <span class="js-expression__content"></span>
+            </div>
+          </div>
+
+          <!-- keyboard -->
           <div class="keyboard grid bg-secondary rounded-2 fw-700">
             <button
               class="key key--normal fs-400 text-secondary brighter-selected"

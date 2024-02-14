@@ -1,5 +1,7 @@
 import announce from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
+import managePopupMenu from "./popup-menu-manager.js";
+managePopupMenu(document.querySelector(".js-menu-parent"));
 let expression = "";
 function announceExpression() {
     if (expression) {
@@ -9,10 +11,10 @@ function announceExpression() {
         announcePolitely("Expression is empty");
     }
 }
-const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionNode = calculator.querySelector(".js-expression");
+const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content");
 function updateCalculatorExpression(exp) {
-    expressionNode.textContent = exp;
-    expressionNode.scrollLeft = expressionNode.scrollWidth;
+    expressionContent.textContent = exp;
+    expressionContainer.scrollLeft = expressionContainer.scrollWidth;
 }
 function deleteLastSymbol() {
     expression = expression.slice(0, expression.length - 1);
