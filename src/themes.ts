@@ -1,10 +1,12 @@
+import type { Theme } from "./types";
+import * as storage from "./storage.js";
+
 const themes = [
   "theme-blue",
   "theme-white",
   "theme-purple",
   "default-theme",
 ] as const;
-type Theme = (typeof themes)[number];
 
 const body = document.body;
 
@@ -17,10 +19,10 @@ function removeTheme() {
 function setTheme(t: Theme) {
   removeTheme();
   body.classList.add(t);
-  localStorage.setItem("calculator-theme", t);
+  storage.save("theme", t);
 }
 
-let initialTheme = localStorage.getItem("calculator-theme");
+let initialTheme = storage.get("theme");
 if (initialTheme === null) {
   const lightMatch = matchMedia("(prefers-color-scheme: light)");
   if (lightMatch.matches) {

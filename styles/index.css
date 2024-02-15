@@ -258,6 +258,10 @@ ul {
    text-transform: lowercase;
 }
 
+.capitalize {
+   text-transform: capitalize;
+}
+
 .letter-spacing-1 {
    letter-spacing: 1px;
 }
@@ -587,7 +591,6 @@ ul {
    width: 100%;
    border: 1px solid hsl(var(--c-text-primary) / .3);
    padding-block: .5rem;
-   text-transform: capitalize;
    background-color: hsl(var(--c-primary));
 
    transition-property: color, background-color;

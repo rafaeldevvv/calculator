@@ -1,4 +1,4 @@
-"use strict";
+import * as storage from "./storage.js";
 const themes = [
     "theme-blue",
     "theme-white",
@@ -14,9 +14,9 @@ function removeTheme() {
 function setTheme(t) {
     removeTheme();
     body.classList.add(t);
-    localStorage.setItem("calculator-theme", t);
+    storage.save("theme", t);
 }
-let initialTheme = localStorage.getItem("calculator-theme");
+let initialTheme = storage.get("theme");
 if (initialTheme === null) {
     const lightMatch = matchMedia("(prefers-color-scheme: light)");
     if (lightMatch.matches) {
