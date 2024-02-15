@@ -21,7 +21,10 @@ function lastIndex(arr: any[]) {
 export default function managePopupMenu(parent: HTMLElement) {
   const menu = parent.querySelector("[role=menu]") as HTMLElement,
     toggleBtn = (parent.querySelector("button") ||
-      parent.querySelector("[role=button]")) as HTMLElement;
+      parent.querySelector("[role=button]")) as HTMLElement,
+    clickableArea = parent.querySelector(
+      ".js-menu-clickable-area"
+    ) as HTMLElement;
 
   let items = Array.from(
     menu.querySelectorAll("[role=menuitem]")
@@ -30,22 +33,33 @@ export default function managePopupMenu(parent: HTMLElement) {
   const menuLabel = getAriaLabel(menu);
   const mutatedMenuLabel = menuLabel.replace(/ /g, "-").replace(/\W/g, "");
 
-  const itemsIds = items.map((_, index) => `${mutatedMenuLabel}-item-${index}`);
-  items.forEach((item, index) => {
-    item.id = itemsIds[index];
-  });
+  function generateItemsIds() {
+    return items.map((_, index) => `${mutatedMenuLabel}-item-${index}`);
+  }
+
+  function setUpItems() {
+    const itemsIds = generateItemsIds();
+    items.forEach((item, index) => {
+      item.tabIndex = -1;
+      item.id = itemsIds[index];
+    });
+  }
+
+  setUpItems();
 
   let focusedItemIndex: null | number = null,
     open = toggleBtn.getAttribute("aria-expanded") === "true";
 
   const mutationObserver = new MutationObserver(() => {
     items = Array.from(menu.querySelectorAll("[role=menuitem]"));
+    setUpItems();
   });
 
-  mutationObserver.observe(menu, { subtree: true, childList: true });
+  mutationObserver.observe(parent, { subtree: true, childList: true });
 
   function focusItem(itemIndex: number) {
     const item = items[itemIndex];
+    if (!item) return;
     item.focus();
     focusedItemIndex = itemIndex;
     menu.setAttribute("aria-activedescendant", item.id);
@@ -64,8 +78,8 @@ export default function managePopupMenu(parent: HTMLElement) {
     const target = e.target as HTMLElement;
 
     if (
-      target !== toggleBtn.nextElementSibling &&
-      !toggleBtn.nextElementSibling!.contains(target as HTMLElement)
+      target !== clickableArea &&
+      !clickableArea.contains(target as HTMLElement)
     ) {
       closeMenu();
     }
@@ -73,7 +87,10 @@ export default function managePopupMenu(parent: HTMLElement) {
 
   function openMenu() {
     toggleBtn.ariaExpanded = "true";
-    items.forEach((item) => item.addEventListener("click", closeMenu));
+    items.forEach((item) => {
+      item.tabIndex = 0;
+      item.addEventListener("click", closeMenu);
+    });
     open = true;
     setTimeout(
       /* the event is immediately fired when the event listener is assigned,
@@ -82,71 +99,78 @@ export default function managePopupMenu(parent: HTMLElement) {
       () => window.addEventListener("click", handleClickOnDocument),
       0
     );
+    window.addEventListener("keydown", handleKeyboardInteractionForOpenMenu);
   }
 
   function closeMenu() {
-    items.forEach((item) => item.removeEventListener("click", closeMenu));
+    items.forEach((item) => {
+      item.tabIndex = -1;
+      item.removeEventListener("click", closeMenu);
+    });
     menu.removeAttribute("aria-activedescendant");
     toggleBtn.ariaExpanded = "false";
     window.removeEventListener("click", handleClickOnDocument);
+    window.removeEventListener("keydown", handleKeyboardInteractionForOpenMenu);
+    removeEventListeners();
     open = false;
   }
 
-  function handleKeyboardInteraction(e: KeyboardEvent) {
+  function handleKeyboardInteractionForOpenMenu(e: KeyboardEvent) {
     const { key, shiftKey } = e;
-    if (open) {
-      switch (key) {
-        case "ArrowUp": {
-          e.preventDefault();
-          focusedItemIndex = focusedItemIndex as number;
+    switch (key) {
+      case "ArrowUp": {
+        e.preventDefault();
+        focusedItemIndex = focusedItemIndex as number;
 
-          const previousItemId =
-            focusedItemIndex - 1 === -1
-              ? lastIndex(items)
-              : focusedItemIndex - 1;
-          focusItem(previousItemId);
+        const previousItemId =
+          focusedItemIndex - 1 === -1 ? lastIndex(items) : focusedItemIndex - 1;
+        focusItem(previousItemId);
 
-          break;
-        }
-        case "ArrowDown": {
-          e.preventDefault();
-          focusedItemIndex = focusedItemIndex as number;
-
-          const nextItemId =
-            focusedItemIndex + 1 === lastIndex(items) + 1
-              ? 0
-              : focusedItemIndex + 1;
-          focusItem(nextItemId);
-          break;
-        }
-        case "Tab": {
-          if (shiftKey) {
-            e.preventDefault();
-            closeMenu();
-            toggleBtn.focus();
-          } else {
-            closeMenu();
-          }
-          break;
-        }
-        case "End": {
-          focusItem(lastIndex(items));
-          e.preventDefault();
-          break;
-        }
-        case "Home": {
-          focusItem(0);
-          e.preventDefault();
-          break;
-        }
-        case "Escape": {
-          closeMenu();
-          e.preventDefault();
-          toggleBtn.focus();
-          break;
-        }
+        break;
       }
-    } else {
+      case "ArrowDown": {
+        e.preventDefault();
+        focusedItemIndex = focusedItemIndex as number;
+
+        const nextItemId =
+          focusedItemIndex + 1 === lastIndex(items) + 1
+            ? 0
+            : focusedItemIndex + 1;
+        focusItem(nextItemId);
+        break;
+      }
+      case "Tab": {
+        if (shiftKey) {
+          e.preventDefault();
+          closeMenu();
+          toggleBtn.focus();
+        } else {
+          closeMenu();
+        }
+        break;
+      }
+      case "End": {
+        focusItem(lastIndex(items));
+        e.preventDefault();
+        break;
+      }
+      case "Home": {
+        focusItem(0);
+        e.preventDefault();
+        break;
+      }
+      case "Escape": {
+        closeMenu();
+        e.preventDefault();
+        toggleBtn.focus();
+        break;
+      }
+    }
+  }
+
+  function handleKeyboardInteractionForClosedMenu(e: KeyboardEvent) {
+    const { key } = e;
+    if (!open) {
       if (key === "ArrowUp") {
         openMenu();
         focusItem(lastIndex(items));
@@ -159,17 +183,19 @@ export default function managePopupMenu(parent: HTMLElement) {
     }
   }
 
-  function handleBlur() {
-    if (!parent.contains(document.activeElement)) {
-      window.removeEventListener("keydown", handleKeyboardInteraction);
-      parent.removeEventListener("blur", handleBlur);
-      window.removeEventListener("click", handleClickOnDocument);
-    }
+  function removeEventListeners() {
+    console.log("remove event listeners");
+    window.removeEventListener(
+      "keydown",
+      handleKeyboardInteractionForClosedMenu
+    );
+    toggleBtn.removeEventListener("focusout", removeEventListeners);
   }
 
   function handleFocus() {
-    window.addEventListener("keydown", handleKeyboardInteraction);
-    parent.addEventListener("blur", handleBlur);
+    console.log("add events listeners for focus");
+    window.addEventListener("keydown", handleKeyboardInteractionForClosedMenu);
+    toggleBtn.addEventListener("focusout", removeEventListeners);
   }
 
   toggleBtn.addEventListener("click", toggleMenu);

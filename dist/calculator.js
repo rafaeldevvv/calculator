@@ -1,6 +1,7 @@
 import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
+import * as storage from "./storage.js";
 managePopupMenu(document.querySelector(".js-menu-parent"));
 let expression = "";
 function announceExpression() {
@@ -9,6 +10,11 @@ function announceExpression() {
     }
     else {
         announcePolitely("Expression is empty");
+    }
+}
+function updateHistory() {
+    const history = storage.get("history");
+    if (history.length === 0) {
     }
 }
 const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content");
@@ -42,8 +48,8 @@ window.addEventListener("keydown", (e) => {
     if (e.key === "Backspace")
         deleteLastSymbol();
 });
-resultKey.addEventListener("click", getResult);
-function getResult() {
+resultKey.addEventListener("click", showResult);
+function showResult() {
     if (expression.length === 0)
         return;
     try {

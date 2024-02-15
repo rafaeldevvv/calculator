@@ -1,6 +1,7 @@
 import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
+import * as storage from "./storage.js";
 
 managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
@@ -11,6 +12,13 @@ function announceExpression() {
     announcePolitely(`Current expression is ${expression}`);
   } else {
     announcePolitely("Expression is empty");
+  }
+}
+
+function updateHistory() {
+  const history = storage.get("history");
+  if (history.length === 0) {
+    
   }
 }
 
@@ -65,9 +73,9 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "Backspace") deleteLastSymbol();
 });
 
-resultKey.addEventListener("click", getResult);
+resultKey.addEventListener("click", showResult);
 
-function getResult() {
+function showResult() {
   if (expression.length === 0) return;
   try {
     const result = doTheMath(expression);

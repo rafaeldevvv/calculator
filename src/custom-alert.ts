@@ -10,7 +10,7 @@ let currentTimeout: number | undefined;
 export default function announce(
   announcement: { toString(): string },
   options?: {
-    /** How much time the alter remains in the screen. */
+    /** How much time the alert remains in the screen. */
     time: number;
   }
 ) {
