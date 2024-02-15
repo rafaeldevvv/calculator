@@ -1,3 +1,5 @@
+import { lastIndex } from "./utils.js";
+
 function getAriaLabel(elt: HTMLElement) {
   const labellingElementId = elt.getAttribute("aria-labelledby") || "",
     labellingContent = document.querySelector(
@@ -12,10 +14,6 @@ function getAriaLabel(elt: HTMLElement) {
   }
 
   return label;
-}
-
-function lastIndex(arr: any[]) {
-  return arr.length - 1;
 }
 
 export default function managePopupMenu(parent: HTMLElement) {
@@ -184,7 +182,6 @@ export default function managePopupMenu(parent: HTMLElement) {
   }
 
   function removeEventListeners() {
-    console.log("remove event listeners");
     window.removeEventListener(
       "keydown",
       handleKeyboardInteractionForClosedMenu
@@ -193,7 +190,6 @@ export default function managePopupMenu(parent: HTMLElement) {
   }
 
   function handleFocus() {
-    console.log("add events listeners for focus");
     window.addEventListener("keydown", handleKeyboardInteractionForClosedMenu);
     toggleBtn.addEventListener("focusout", removeEventListeners);
   }

@@ -1,4 +1,5 @@
-import type { CalculatorData, HistoryEntry } from "./types";
+import type { CalculatorData, BareHistoryEntry } from "./types";
+import { lastItem } from "./utils.js";
 
 const savedData = localStorage.getItem("calculator");
 
@@ -20,8 +21,14 @@ export function save<Key extends keyof CalculatorData>(
   localStorage.setItem("calculator", JSON.stringify(calculatorData));
 }
 
-export function addHistoryEntry(entry: HistoryEntry) {
-  calculatorData.history.unshift(entry);
+export function addHistoryEntry(entry: BareHistoryEntry) {
+  const lastEntry = calculatorData.history[0];
+  /* gotta check for undefined here because history might be empty */
+  const lastId = lastEntry !== undefined ? lastEntry.id : -1;
+  const newEntry = { ...entry, id: lastId + 1 };
+  const newHistory = [newEntry, ...calculatorData.history];
+
+  save("history", newHistory);
 }
 
 export function get<Key extends keyof CalculatorData>(

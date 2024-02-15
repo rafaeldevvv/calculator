@@ -2,6 +2,7 @@ import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
+import { renderHistoryEntries } from "./rendering.js";
 managePopupMenu(document.querySelector(".js-menu-parent"));
 let expression = "";
 function announceExpression() {
@@ -12,16 +13,39 @@ function announceExpression() {
         announcePolitely("Expression is empty");
     }
 }
-function updateHistory() {
-    const history = storage.get("history");
-    if (history.length === 0) {
-    }
-}
-const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content");
+const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content"), historyMenu = document.querySelector("#history-menu"), historyDescription = document.querySelector("#history-description");
 function updateCalculatorExpression(exp) {
     expressionContent.textContent = exp;
     expressionContainer.scrollLeft = expressionContainer.scrollWidth;
 }
+const listenedHistoryIds = [];
+function handleEntryClick(id) {
+    const entry = storage.get("history").find((e) => e.id === id);
+    expression = entry.expression;
+    updateCalculatorExpression(expression);
+    announceExpression();
+}
+function registerHistoryEntriesListeners() {
+    const entries = historyMenu.querySelectorAll("[role=menuitem]");
+    entries.forEach((e) => {
+        const id = Number(e.getAttribute("data-entry-id"));
+        if (!listenedHistoryIds.includes(id)) {
+            e.addEventListener("click", () => {
+                handleEntryClick(id);
+            });
+        }
+    });
+}
+function updateHistory() {
+    const history = storage.get("history");
+    if (history.length !== 0) {
+        const historyContent = renderHistoryEntries(history);
+        historyMenu.innerHTML = historyContent;
+        historyDescription.textContent = "Click to select an expression.";
+        registerHistoryEntriesListeners();
+    }
+}
+updateHistory();
 function deleteLastSymbol() {
     expression = expression.slice(0, expression.length - 1);
     updateCalculatorExpression(expression);
@@ -54,8 +78,10 @@ function showResult() {
         return;
     try {
         const result = doTheMath(expression);
+        storage.addHistoryEntry({ expression, result });
         expression = result.toString();
         updateCalculatorExpression(expression);
+        updateHistory();
         announcePolitely(`The result is ${result}`);
     }
     catch (err) {

@@ -4,6 +4,11 @@ export interface HistoryEntry {
   id: number;
 }
 
+export interface BareHistoryEntry {
+  expression: string;
+  result: number;
+}
+
 export interface CalculatorData {
   theme: Theme | null;
   history: HistoryEntry[];

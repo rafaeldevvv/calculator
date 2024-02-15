@@ -14,7 +14,11 @@ export function save(key, data) {
     localStorage.setItem("calculator", JSON.stringify(calculatorData));
 }
 export function addHistoryEntry(entry) {
-    calculatorData.history.unshift(entry);
+    const lastEntry = calculatorData.history[0];
+    const lastId = lastEntry !== undefined ? lastEntry.id : -1;
+    const newEntry = Object.assign(Object.assign({}, entry), { id: lastId + 1 });
+    const newHistory = [newEntry, ...calculatorData.history];
+    save("history", newHistory);
 }
 export function get(prop) {
     return calculatorData[prop];

@@ -2,6 +2,7 @@ import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
+import { renderHistoryEntries } from "./rendering.js";
 
 managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
@@ -12,13 +13,6 @@ function announceExpression() {
     announcePolitely(`Current expression is ${expression}`);
   } else {
     announcePolitely("Expression is empty");
-  }
-}
-
-function updateHistory() {
-  const history = storage.get("history");
-  if (history.length === 0) {
-    
   }
 }
 
@@ -36,12 +30,49 @@ const calculator = document.querySelector(".js-calculator") as HTMLElement,
   ) as HTMLElement,
   expressionContent = calculator.querySelector(
     ".js-expression__content"
-  ) as HTMLElement;
+  ) as HTMLElement,
+  historyMenu = document.querySelector("#history-menu") as HTMLUListElement,
+  historyDescription = document.querySelector(
+    "#history-description"
+  ) as HTMLParagraphElement;
 
 function updateCalculatorExpression(exp: string) {
   expressionContent.textContent = exp;
   expressionContainer.scrollLeft = expressionContainer.scrollWidth;
 }
+
+const listenedHistoryIds: number[] = [];
+
+function handleEntryClick(id: number) {
+  const entry = storage.get("history").find((e) => e.id === id)!;
+  expression = entry.expression;
+  updateCalculatorExpression(expression);
+  announceExpression();
+}
+
+function registerHistoryEntriesListeners() {
+  const entries = historyMenu.querySelectorAll("[role=menuitem]");
+  entries.forEach((e) => {
+    const id = Number(e.getAttribute("data-entry-id"));
+    if (!listenedHistoryIds.includes(id)) {
+      e.addEventListener("click", () => {
+        handleEntryClick(id);
+      });
+    }
+  });
+}
+
+function updateHistory() {
+  const history = storage.get("history");
+  if (history.length !== 0) {
+    const historyContent = renderHistoryEntries(history);
+    historyMenu.innerHTML = historyContent;
+    historyDescription.textContent = "Click to select an expression.";
+    registerHistoryEntriesListeners();
+  }
+}
+
+updateHistory();
 
 function deleteLastSymbol() {
   expression = expression.slice(0, expression.length - 1);
@@ -79,8 +110,12 @@ function showResult() {
   if (expression.length === 0) return;
   try {
     const result = doTheMath(expression);
+
+    storage.addHistoryEntry({ expression, result });
+
     expression = result.toString();
     updateCalculatorExpression(expression);
+    updateHistory();
     announcePolitely(`The result is ${result}`);
   } catch (err) {
     alertUser(err as any);
