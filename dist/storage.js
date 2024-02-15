@@ -9,8 +9,8 @@ else {
         theme: null,
     };
 }
-export function save(prop, data) {
-    calculatorData[prop] = data;
+export function save(key, data) {
+    calculatorData[key] = data;
     localStorage.setItem("calculator", JSON.stringify(calculatorData));
 }
 export function addHistoryEntry(entry) {

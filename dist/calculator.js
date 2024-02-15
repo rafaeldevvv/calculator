@@ -1,4 +1,4 @@
-import announce from "./custom-alert.js";
+import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 managePopupMenu(document.querySelector(".js-menu-parent"));
@@ -53,7 +53,7 @@ function getResult() {
         announcePolitely(`The result is ${result}`);
     }
     catch (err) {
-        announce(err);
+        alertUser(err);
     }
 }
 const operators = ["+", "-", "x", "÷", "^"];

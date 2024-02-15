@@ -13,10 +13,10 @@ if (savedData) {
 }
 
 export function save<Key extends keyof CalculatorData>(
-  prop: Key,
+  key: Key,
   data: CalculatorData[Key]
 ) {
-  calculatorData[prop] = data;
+  calculatorData[key] = data;
   localStorage.setItem("calculator", JSON.stringify(calculatorData));
 }
 

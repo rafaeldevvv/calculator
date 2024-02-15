@@ -1,4 +1,4 @@
-import announce from "./custom-alert.js";
+import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 
@@ -75,7 +75,7 @@ function getResult() {
     updateCalculatorExpression(expression);
     announcePolitely(`The result is ${result}`);
   } catch (err) {
-    announce(err as any);
+    alertUser(err as any);
   }
 }
 
