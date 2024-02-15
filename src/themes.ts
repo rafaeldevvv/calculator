@@ -5,7 +5,7 @@ const themes = [
   "theme-blue",
   "theme-white",
   "theme-purple",
-  "default-theme",
+  "theme-default",
 ] as const;
 
 const body = document.body;

@@ -3,7 +3,7 @@ const themes = [
     "theme-blue",
     "theme-white",
     "theme-purple",
-    "default-theme",
+    "theme-default",
 ];
 const body = document.body;
 function removeTheme() {

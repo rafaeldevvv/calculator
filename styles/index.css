@@ -77,7 +77,7 @@
 }
 
 .theme-purple,
-.default-theme {
+.theme-default {
    --selected-brightness: 1.8;
 
    --c-primary: 268 75% 9%;
@@ -106,7 +106,7 @@
    page loses its purpose
 */
 @media (prefers-color-scheme: light) {
-   .default-theme {
+   .theme-default {
       --c-primary: 0 0% 90%;
       --c-secondary: 0 5% 81%;
       --c-tertiary: 0 0% 93%;
