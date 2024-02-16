@@ -494,7 +494,6 @@ ul {
    height: 5rem;
    background-color: hsl(var(--c-tertiary));
    text-wrap: nowrap;
-   overflow-x: overlay;
    overflow-y: hidden;
    padding-inline: 3.5rem 1rem;
 

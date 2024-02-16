@@ -90,6 +90,7 @@
               <section
                 class="history-menu-container absolute rounded js-menu-clickable-area"
                 aria-labelledby="history-heading"
+                id="history-section"
               >
                 <h2 class="mb-1" id="history-heading">History</h2>
                 <p class="mb-2" id="history-description">
@@ -106,11 +107,15 @@
             </div>
 
             <!-- expression -->
-            <div
+            <section
               class="expression fs-500 text-right rounded-2 pt-3 fw-700 relative js-expression-container"
+              aria-labelledby="expression-heading"
             >
+              <h2 class="visually-hidden" id="expression-heading">
+                Expression
+              </h2>
               <span class="js-expression__content"></span>
-            </div>
+            </section>
           </div>
 
           <!-- keyboard -->
