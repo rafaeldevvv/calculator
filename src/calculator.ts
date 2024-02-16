@@ -6,6 +6,7 @@ import {
   renderHistoryEntries,
   prepareExpressionForPresentation,
 } from "./rendering.js";
+import { spliceString } from "./utils.js";
 
 managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
@@ -209,39 +210,6 @@ function destructureExpression(
 }
 
 /**
- * Inserts a string into another string, optionally deleting
- * characters where it is inserted.
- *
- * @param targetString - The string to insert the other string in.
- * @param start - Where to start adding the new string.
- * @param deleteCount - How many characters to delete where the string is inserted.
- * @param insertedString - The string to be inserted.
- * @returns - A string with the new string string added, optionally with characters removed.
- *
- * @example
- * const cdog = spliceString("cat", 1, 2, "dog");
- * console.log(cdog);
- * // -> "cdog"
- */
-function spliceString(
-  targetString: string,
-  start: number,
-  deleteCount: number,
-  insertedString: string
-) {
-  if (start < 0) {
-    start = targetString.length + start;
-    if (start < 0) start = 0;
-  }
-
-  return (
-    targetString.slice(0, start) +
-    insertedString +
-    targetString.slice(start + deleteCount)
-  );
-}
-
-/**
  * Solves a mathematical expression.
  *
  * @returns - The result of the calculations.
@@ -253,7 +221,7 @@ function doTheMath(exp: string): number {
     return Number(exp);
   }
 
-  exp = addMultiplicationSignsBetweenOppositeBrackets(exp);
+  exp = addMultiplicationSignsAroundBrackets(exp);
 
   while (exp.includes("(")) {
     const bracketExpressionMatch = bracketExpression.exec(exp)!,
@@ -276,10 +244,15 @@ function doTheMath(exp: string): number {
   return Number(exp);
 }
 
-function addMultiplicationSignsBetweenOppositeBrackets(exp: string) {
+function addMultiplicationSignsAroundBrackets(exp: string) {
   exp = exp.replaceAll(")(", ")x(");
-  exp = exp.replace(/(\d)\(/g, "$1x(");
-  return exp.replaceAll(")(", ")x(");
+  /* 
+  the dot assumes that the expression is valid and we have something like 5.(2) or (5).5 
+  which results in 5x2 and 5x0.5, respectively.
+  */
+  exp = exp.replace(/(\d|\.)\(/g, "$1x(");
+  exp = exp.replace(/\)(\d|\.)/g, ")x$1");
+  return exp;
 }
 
 function fixSigns(exp: string) {
@@ -335,18 +308,18 @@ const tooBigNumber = new RegExp(
     String.raw`\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`
     // if there's an 'e' in the expression then we're messing with really big numbers already
   ),
-  multipleOperators = /([-+÷x^]{2,})/,
+  multipleOperators = /([-+÷x^%]{2,})/,
   multipleDots = /(\.{2,})/,
-  missingOperand = /(\d+[-+÷x^])$/,
+  missingOperand = /(\d+[-+÷x^%])$/,
   invalidDot = /\D\.\D/,
   invalidDotAlone = /^(\.|\.\D|\D\.)$/,
   invalidNaNOrInfinity = /NaN|Infinity/,
-  singleOperator = /^[-+÷x^]$/,
+  singleOperator = /^[-+÷x^%]$/,
   emptyParenthesis = /\(\)/,
   singleBracket = /^(\(|\))$/,
-  operatorAndBracket = /[-+÷x^]\)|\([x÷^]/,
+  operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/,
   invalidDecimal = /\d*(\.\d*){2,}/,
-  invalidOperator = /^[÷x^]/;
+  invalidOperator = /^[÷x^%]/;
 
 /**
  * A check for an error in a piece of text.

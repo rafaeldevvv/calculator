@@ -3,6 +3,7 @@ import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
 import { renderHistoryEntries, prepareExpressionForPresentation, } from "./rendering.js";
+import { spliceString } from "./utils.js";
 managePopupMenu(document.querySelector(".js-menu-parent"));
 let expression = "";
 function announceExpression() {
@@ -117,22 +118,12 @@ function destructureExpression(exp) {
     const firstTermMatch = number.exec(exp), term1 = firstTermMatch[0], rest = exp.slice(term1.length), operator = rest[0], term2 = rest.slice(1);
     return [Number(term1), operator, Number(term2)];
 }
-function spliceString(targetString, start, deleteCount, insertedString) {
-    if (start < 0) {
-        start = targetString.length + start;
-        if (start < 0)
-            start = 0;
-    }
-    return (targetString.slice(0, start) +
-        insertedString +
-        targetString.slice(start + deleteCount));
-}
 function doTheMath(exp) {
     checkValidity(exp);
     if (onlyNumber.test(exp)) {
         return Number(exp);
     }
-    exp = addMultiplicationSignsBetweenOppositeBrackets(exp);
+    exp = addMultiplicationSignsAroundBrackets(exp);
     while (exp.includes("(")) {
         const bracketExpressionMatch = bracketExpression.exec(exp), { index } = bracketExpressionMatch, bracketExpressionString = bracketExpressionMatch[0], matchLength = bracketExpressionString.length, innerExp = bracketExpressionString.slice(1, matchLength - 1);
         const result = doTheMath(innerExp).toString();
@@ -145,10 +136,11 @@ function doTheMath(exp) {
     exp = precedenceRules.reduce(solveExpressions, exp);
     return Number(exp);
 }
-function addMultiplicationSignsBetweenOppositeBrackets(exp) {
+function addMultiplicationSignsAroundBrackets(exp) {
     exp = exp.replaceAll(")(", ")x(");
-    exp = exp.replace(/(\d)\(/g, "$1x(");
-    return exp.replaceAll(")(", ")x(");
+    exp = exp.replace(/(\d|\.)\(/g, "$1x(");
+    exp = exp.replace(/\)(\d|\.)/g, ")x$1");
+    return exp;
 }
 function fixSigns(exp) {
     exp = exp.replaceAll("+-", "-");
@@ -178,7 +170,7 @@ function solveExpressions(exp, targetExpressionRegExp) {
     return exp;
 }
 const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /([-+÷x^]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x^])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^]$/, emptyParenthesis = /\(\)/, singleBracket = /^(\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^]/, invalidDecimal = /\d*(\.\d*){2,}/, invalidOperator = /^[÷x^]/;
+const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /([-+÷x^%]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x^%])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^%]$/, emptyParenthesis = /\(\)/, singleBracket = /^(\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/, invalidDecimal = /\d*(\.\d*){2,}/, invalidOperator = /^[÷x^%]/;
 const errorTests = [
     {
         test: tooBigNumber,
