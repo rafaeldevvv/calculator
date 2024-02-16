@@ -325,7 +325,9 @@ const tooBigNumber = new RegExp(
   singleOperator = /^[-+÷x^]$/,
   emptyParenthesis = /\(\)/,
   singleBracket = /^(\(|\))$/,
-  operatorAndBracket = /[-+÷x^]\)|\([x÷^]/;
+  operatorAndBracket = /[-+÷x^]\)|\([x÷^]/,
+  invalidDecimal = /\d*(\.\d*){2,}/;
+
 /**
  * A check for an error in a piece of text.
  */
@@ -395,6 +397,11 @@ const errorTests: ErrorCheck[] = [
   {
     test: operatorAndBracket,
     message: "Invalid operator and bracket combination: '*'",
+    ErrorConstructor: SyntaxError,
+  },
+  {
+    test: invalidDecimal,
+    message: "Invalid number: '*'",
     ErrorConstructor: SyntaxError,
   },
 ];
