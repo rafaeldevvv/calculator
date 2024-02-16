@@ -14,15 +14,26 @@ function announceExpression() {
     }
 }
 const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content"), historyMenu = document.querySelector("#history-menu"), historyDescription = document.querySelector("#history-description");
-function updateCalculatorExpression(exp) {
+function animateExpression() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches)
+        return;
+    expressionContent.animate([
+        { opacity: 0, transform: "translateY(300%)" },
+        { opacity: 1, transform: "translateY(0%)" },
+    ], { duration: 500, fill: "forwards" });
+}
+function updateCalculatorExpression(exp, animate = false) {
     expressionContent.innerHTML = prepareExpressionForPresentation(exp);
     expressionContainer.scrollLeft = expressionContainer.scrollWidth;
+    if (animate) {
+        animateExpression();
+    }
 }
 const listenedHistoryIds = [];
 function handleEntryClick(id) {
     const entry = storage.get("history").find((e) => e.id === id);
     expression = entry.expression;
-    updateCalculatorExpression(expression);
+    updateCalculatorExpression(expression, true);
     announceExpression();
 }
 function registerHistoryEntriesListeners() {
@@ -80,8 +91,8 @@ function showResult() {
         const result = doTheMath(expression);
         storage.addHistoryEntry({ expression, result });
         expression = result.toString();
-        updateCalculatorExpression(expression);
         updateHistory();
+        updateCalculatorExpression(expression, true);
         announcePolitely(`The result is ${result}`);
     }
     catch (err) {

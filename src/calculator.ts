@@ -39,9 +39,25 @@ const calculator = document.querySelector(".js-calculator") as HTMLElement,
     "#history-description"
   ) as HTMLParagraphElement;
 
-function updateCalculatorExpression(exp: string) {
+function animateExpression() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  expressionContent.animate(
+    [
+      { opacity: 0, transform: "translateY(300%)" },
+      { opacity: 1, transform: "translateY(0%)" },
+    ],
+    { duration: 500, fill: "forwards" }
+  );
+}
+
+function updateCalculatorExpression(exp: string, animate = false) {
   expressionContent.innerHTML = prepareExpressionForPresentation(exp);
   expressionContainer.scrollLeft = expressionContainer.scrollWidth;
+
+  if (animate) {
+    animateExpression();
+  }
 }
 
 const listenedHistoryIds: number[] = [];
@@ -49,7 +65,7 @@ const listenedHistoryIds: number[] = [];
 function handleEntryClick(id: number) {
   const entry = storage.get("history").find((e) => e.id === id)!;
   expression = entry.expression;
-  updateCalculatorExpression(expression);
+  updateCalculatorExpression(expression, true);
   announceExpression();
 }
 
@@ -117,8 +133,8 @@ function showResult() {
     storage.addHistoryEntry({ expression, result });
 
     expression = result.toString();
-    updateCalculatorExpression(expression);
     updateHistory();
+    updateCalculatorExpression(expression, true);
     announcePolitely(`The result is ${result}`);
   } catch (err) {
     alertUser(err as any);
