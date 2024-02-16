@@ -224,7 +224,6 @@ function doTheMath(exp: string): number {
 
   exp = addMissingMultiplicationSigns(exp);
   exp = replacePercentages(exp);
-  console.log(exp);
 
   while (exp.includes("(")) {
     const bracketExpressionMatch = bracketExpression.exec(exp)!,
@@ -318,7 +317,7 @@ const tooBigNumber = new RegExp(
     String.raw`\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`
     // if there's an 'e' in the expression then we're messing with really big numbers already
   ),
-  multipleOperators = /([-+÷x^%]{2,})/,
+  multipleOperators = /([-+÷x^]{2,}|%{2,})/,
   multipleDots = /(\.{2,})/,
   missingOperand = /(\d+[-+÷x^])$/,
   invalidDot = /\D\.\D/,
