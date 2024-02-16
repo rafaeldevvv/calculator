@@ -622,8 +622,8 @@ ul {
 .history-entry {
    width: 100%;
    border: 1px solid hsl(var(--c-text-primary) / .3);
-   padding-block: .5rem;
-   background-color: hsl(var(--c-primary));
+   padding-block: .8rem;
+   background-color: hsl(var(--c-secondary));
 
    transition-property: color, background-color;
    transition-duration: 300ms;
