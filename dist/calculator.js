@@ -178,7 +178,7 @@ function solveExpressions(exp, targetExpressionRegExp) {
     return exp;
 }
 const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /([-+÷x^]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x^])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^]$/, emptyParenthesis = /\(\)/, singleBracket = /^(\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^]/, invalidDecimal = /\d*(\.\d*){2,}/;
+const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /([-+÷x^]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x^])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^]$/, emptyParenthesis = /\(\)/, singleBracket = /^(\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^]/, invalidDecimal = /\d*(\.\d*){2,}/, invalidOperator = /^[÷x^]/;
 const errorTests = [
     {
         test: tooBigNumber,
@@ -238,6 +238,11 @@ const errorTests = [
     {
         test: invalidDecimal,
         message: "Invalid number: '*'",
+        ErrorConstructor: SyntaxError,
+    },
+    {
+        test: invalidOperator,
+        message: "Invalid operator at the beginning of expression: '*'",
         ErrorConstructor: SyntaxError,
     },
 ];
