@@ -2,7 +2,7 @@ import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
-import { renderHistoryEntries } from "./rendering.js";
+import { renderHistoryEntries, prepareExpressionForPresentation, } from "./rendering.js";
 managePopupMenu(document.querySelector(".js-menu-parent"));
 let expression = "";
 function announceExpression() {
@@ -15,7 +15,7 @@ function announceExpression() {
 }
 const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content"), historyMenu = document.querySelector("#history-menu"), historyDescription = document.querySelector("#history-description");
 function updateCalculatorExpression(exp) {
-    expressionContent.textContent = exp;
+    expressionContent.innerHTML = prepareExpressionForPresentation(exp);
     expressionContainer.scrollLeft = expressionContainer.scrollWidth;
 }
 const listenedHistoryIds = [];

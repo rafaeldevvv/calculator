@@ -10,7 +10,9 @@ export function renderHistoryEntry(entry: HistoryEntry) {
          data-entry-id="${entry.id}"
       >
          <span class="history-entry__expression block">
-         <strong>expression</strong>: ${entry.expression}
+         <strong>expression</strong>: ${prepareExpressionForPresentation(
+           entry.expression
+         )}
          </span>
          <span class="history-entry__result block mt-1">
          <strong>result</strong>: ${entry.result}
@@ -25,4 +27,10 @@ export function renderHistoryMenuListItem(entry: HistoryEntry) {
 
 export function renderHistoryEntries(entries: HistoryEntry[]) {
   return entries.map(renderHistoryMenuListItem).join("");
+}
+
+export function prepareExpressionForPresentation(exp: string) {
+  return exp
+    .replace(/([-+÷x^])/g, `<span class="operator fw-800">$&</span>`)
+    .replace(/[()]/g, `<span class="paren fw-800">$&</span>`);
 }

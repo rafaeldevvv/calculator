@@ -16,6 +16,9 @@
    --c-most-special-key-bg: ;
    --c-most-special-key-shadow: ;
 
+   --c-paren: ;
+   --c-sign: ;
+
    /*
    (COMMENT FOR SELF-LEARNING, NO NEED TO READ)
    it tried to do var(--c-most-special-key-bg) 
@@ -50,6 +53,9 @@
    --c-most-special-key-bg: 6 63% 50%;
    --c-most-special-key-shadow: 6 70% 34%;
 
+   --c-paren: 225 21% 70%;
+   --c-sign: 52 100% 55%;
+
    --c-form-control: var(--c-most-special-key-bg);
 
    --c-text-primary: 0 0% 100%;
@@ -68,6 +74,9 @@
    --c-most-special-key-shadow: 25 99% 27%;
    --c-normal-key-bg: 45 7% 89%;
    --c-normal-key-shadow: 35 11% 61%;
+
+   --c-paren: 185 58% 25%;
+   --c-sign: 25 98% 30%;
 
    --c-form-control: var(--c-most-special-key-bg);
 
@@ -90,6 +99,9 @@
    --c-most-special-key-shadow: 177 92% 70%;
    --c-normal-key-bg: 268 47% 21%;
    --c-normal-key-shadow: 290 70% 36%;
+
+   --c-paren: 281 89% 73%;
+   --c-sign: 177 92% 70%;
 
    --c-form-control: var(--c-most-special-key-bg);
 
@@ -117,6 +129,9 @@
       --c-most-special-key-shadow: 25 99% 27%;
       --c-normal-key-bg: 45 7% 89%;
       --c-normal-key-shadow: 35 11% 61%;
+
+      --c-paren: 185 58% 25%;
+      --c-sign: 25 98% 30%;
 
       --c-form-control: var(--c-most-special-key-bg);
 
@@ -508,6 +523,16 @@ ul {
    scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
 }
 
+.operator {
+   color: hsl(var(--c-sign));
+   margin-inline: .2rem;
+}
+
+.paren {
+   color: hsl(var(--c-paren));
+   margin-inline: .1rem;
+}
+
 .expression::-webkit-scrollbar {
    height: 10px;
 }
@@ -617,6 +642,8 @@ ul {
 .history-entry:focus-visible {
    background-color: hsl(var(--c-text-primary));
    color: hsl(var(--c-primary));
+   --c-sign: hsl(var(--c-primary));
+   --c-paren: hsl(var(--c-primary));
 }
 
 /* ====================== radio buttons ============================= */

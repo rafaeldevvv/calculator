@@ -2,7 +2,10 @@ import alertUser from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
-import { renderHistoryEntries } from "./rendering.js";
+import {
+  renderHistoryEntries,
+  prepareExpressionForPresentation,
+} from "./rendering.js";
 
 managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
@@ -37,7 +40,7 @@ const calculator = document.querySelector(".js-calculator") as HTMLElement,
   ) as HTMLParagraphElement;
 
 function updateCalculatorExpression(exp: string) {
-  expressionContent.textContent = exp;
+  expressionContent.innerHTML = prepareExpressionForPresentation(exp);
   expressionContainer.scrollLeft = expressionContainer.scrollWidth;
 }
 
