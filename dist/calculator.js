@@ -108,7 +108,7 @@ const operatorsFunctions = {
     "÷": (a, b) => a / b,
     "^": Math.pow,
 };
-const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/, onlyNumber = /^(([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+))$/, bracketExpression = /\([-+÷x^.\d]+\)/;
+const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/, onlyNumber = /^(([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+))$/, bracketExpression = /\([-+÷x^.\d]+\)/, percentage = /(\.\d+|\d+(\.\d*)?|\(.*\))%/g;
 function expRegExp(operatorCharacterClass) {
     return new RegExp(`(${number.source})(${operatorCharacterClass})(${number.source})`);
 }
@@ -123,7 +123,9 @@ function doTheMath(exp) {
     if (onlyNumber.test(exp)) {
         return Number(exp);
     }
-    exp = addMultiplicationSignsAroundBrackets(exp);
+    exp = addMissingMultiplicationSigns(exp);
+    exp = replacePercentages(exp);
+    console.log(exp);
     while (exp.includes("(")) {
         const bracketExpressionMatch = bracketExpression.exec(exp), { index } = bracketExpressionMatch, bracketExpressionString = bracketExpressionMatch[0], matchLength = bracketExpressionString.length, innerExp = bracketExpressionString.slice(1, matchLength - 1);
         const result = doTheMath(innerExp).toString();
@@ -136,10 +138,15 @@ function doTheMath(exp) {
     exp = precedenceRules.reduce(solveExpressions, exp);
     return Number(exp);
 }
-function addMultiplicationSignsAroundBrackets(exp) {
+function addMissingMultiplicationSigns(exp) {
     exp = exp.replaceAll(")(", ")x(");
     exp = exp.replace(/(\d|\.)\(/g, "$1x(");
     exp = exp.replace(/\)(\d|\.)/g, ")x$1");
+    exp = exp.replace(/%(\(|\d)/, "%x$1");
+    return exp;
+}
+function replacePercentages(exp) {
+    exp = exp.replaceAll(percentage, "($1÷100)");
     return exp;
 }
 function fixSigns(exp) {
@@ -170,7 +177,7 @@ function solveExpressions(exp, targetExpressionRegExp) {
     return exp;
 }
 const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /([-+÷x^%]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x^%])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^%]$/, emptyParenthesis = /\(\)/, singleBracket = /^(\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/, invalidDecimal = /\d*(\.\d*){2,}/, invalidOperator = /^[÷x^%]/;
+const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /([-+÷x^%]{2,})/, multipleDots = /(\.{2,})/, missingOperand = /(\d+[-+÷x^])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^%]$/, emptyParenthesis = /\(\)/, singleBracket = /^(\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/, invalidDecimal = /\d*(\.\d*){2,}/, invalidOperator = /^[÷x^%]/;
 const errorTests = [
     {
         test: tooBigNumber,

@@ -155,7 +155,8 @@ const operatorsFunctions = {
 
 const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/,
   onlyNumber = /^(([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+))$/,
-  bracketExpression = /\([-+÷x^.\d]+\)/;
+  bracketExpression = /\([-+÷x^.\d]+\)/,
+  percentage = /(\.\d+|\d+(\.\d*)?|\(.*\))%/g;
 
 /**
  * Builds a mathematical expression regular expression.
@@ -221,7 +222,9 @@ function doTheMath(exp: string): number {
     return Number(exp);
   }
 
-  exp = addMultiplicationSignsAroundBrackets(exp);
+  exp = addMissingMultiplicationSigns(exp);
+  exp = replacePercentages(exp);
+  console.log(exp);
 
   while (exp.includes("(")) {
     const bracketExpressionMatch = bracketExpression.exec(exp)!,
@@ -244,7 +247,7 @@ function doTheMath(exp: string): number {
   return Number(exp);
 }
 
-function addMultiplicationSignsAroundBrackets(exp: string) {
+function addMissingMultiplicationSigns(exp: string) {
   exp = exp.replaceAll(")(", ")x(");
   /* 
   the dot assumes that the expression is valid and we have something like 5.(2) or (5).5 
@@ -252,6 +255,13 @@ function addMultiplicationSignsAroundBrackets(exp: string) {
   */
   exp = exp.replace(/(\d|\.)\(/g, "$1x(");
   exp = exp.replace(/\)(\d|\.)/g, ")x$1");
+  exp = exp.replace(/%(\(|\d)/, "%x$1");
+
+  return exp;
+}
+
+function replacePercentages(exp: string) {
+  exp = exp.replaceAll(percentage, "($1÷100)");
   return exp;
 }
 
@@ -310,7 +320,7 @@ const tooBigNumber = new RegExp(
   ),
   multipleOperators = /([-+÷x^%]{2,})/,
   multipleDots = /(\.{2,})/,
-  missingOperand = /(\d+[-+÷x^%])$/,
+  missingOperand = /(\d+[-+÷x^])$/,
   invalidDot = /\D\.\D/,
   invalidDotAlone = /^(\.|\.\D|\D\.)$/,
   invalidNaNOrInfinity = /NaN|Infinity/,
