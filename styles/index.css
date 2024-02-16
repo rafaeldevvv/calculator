@@ -538,7 +538,7 @@ ul {
 
 .history-btn:hover::before,
 .history-btn:focus-visible::before {
-   background-color: hsl(0 50% 100% /.2);
+   background-color: hsl(var(--c-text-primary) /.2);
    transform: scale(2);
 }
 
