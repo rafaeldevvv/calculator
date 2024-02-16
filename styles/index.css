@@ -433,6 +433,14 @@ ul {
    display: block;
 }
 
+.w-full {
+   width: 100%;
+}
+
+.h-full {
+   height: 100%;
+}
+
 .text-left {
    text-align: left;
 }
