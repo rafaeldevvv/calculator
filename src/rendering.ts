@@ -31,6 +31,6 @@ export function renderHistoryEntries(entries: HistoryEntry[]) {
 
 export function prepareExpressionForPresentation(exp: string) {
   return exp
-    .replace(/([-+÷x^])/g, `<span class="operator fw-800">$&</span>`)
+    .replace(/([-+÷x^%])/g, `<span class="operator fw-800">$&</span>`)
     .replace(/[()]/g, `<span class="paren fw-800">$&</span>`);
 }
