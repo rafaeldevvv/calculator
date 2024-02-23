@@ -14,3 +14,11 @@ export function spliceString(targetString, start, deleteCount, insertedString) {
         insertedString +
         targetString.slice(start + deleteCount));
 }
+export function splitAtIndex(str, index, includeCharacterAtIndex = true) {
+    if (includeCharacterAtIndex) {
+        return [str.slice(0, index), str[index], str.slice(index + 1)];
+    }
+    else {
+        return [str.slice(0, index), str.slice(index + 1)];
+    }
+}

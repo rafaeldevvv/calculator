@@ -38,3 +38,31 @@ export function spliceString(
     targetString.slice(start + deleteCount)
   );
 }
+
+/**
+ * Splits a given string into two parts on the provided index.
+ * 
+ * @param str The string to split.
+ * @param index The index at which to split the given string.
+ * @param includeCharacterAtIndex Whether or not to include that character at the index itself in the resulting array.
+ * @returns An array of two or three items. It has two items if the `includeCharacterAtIndex` parameter is false, and 
+ * three items if the `includeCharacterAtIndex` parameter is true.
+ * 
+ * @example
+ * console.log(splitAtIndex("123456", 3, true));
+ * --> ["123", "4", "56"]
+ * 
+ * console.log(splitAtIndex("123456", 3));
+ * --> ["123", "56"]
+ */
+export function splitAtIndex(
+  str: string,
+  index: number,
+  includeCharacterAtIndex = true
+) {
+  if (includeCharacterAtIndex) {
+    return [str.slice(0, index), str[index], str.slice(index + 1)];
+  } else {
+    return [str.slice(0, index), str.slice(index + 1)];
+  }
+}

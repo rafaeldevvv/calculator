@@ -6,7 +6,7 @@ import {
   renderHistoryEntries,
   prepareExpressionForPresentation,
 } from "./rendering.js";
-import { spliceString } from "./utils.js";
+import { spliceString, splitAtIndex } from "./utils.js";
 
 managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
@@ -139,13 +139,15 @@ function showResult() {
     announcePolitely(`The result is ${result}`);
   } catch (err) {
     alertUser(err as any);
+    console.error(err);
   }
 }
 
-const operators = ["+", "-", "x", "÷", "^"] as const;
-type Operator = (typeof operators)[number];
+const binaryOperators = ["+", "-", "x", "÷", "^"] as const;
+type BinaryOperator = (typeof binaryOperators)[number];
+type PlusOrMinus = "+" | "-";
 
-const operatorsFunctions = {
+const binaryOperatorsEvaluators = {
   x: (a: number, b: number) => a * b,
   "+": (a: number, b: number) => a + b,
   "-": (a: number, b: number) => a - b,
@@ -153,160 +155,257 @@ const operatorsFunctions = {
   "^": Math.pow,
 } as const;
 
-const number = /([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+)/,
-  onlyNumber = /^(([-+]?\d+\.\d+)|([-+]?\d+\.?)|([-+]?\.?\d+))$/,
-  bracketExpression = /\([-+÷x^.\d]+\)/,
-  percentage = /(\.\d+|\d+(\.\d*)?|\(.*\))%/g;
+type StrOrNum = string | number;
+type Operands = [StrOrNum, StrOrNum];
+type DestructuredExpression = [
+  operand1: number,
+  operator: BinaryOperator,
+  operand2: number,
+  missingPlusOrMinusSign?: PlusOrMinus
+];
+type Destructurer = (exp: string) => DestructuredExpression;
 
-/**
- * Builds a mathematical expression regular expression.
- * The regular expression will look like `/(term1)(operator)(term2)/`.
- *
- * @param operatorCharacterClass - A character class for operators, such as '[-+]'.
- * @returns - A mathematical expression regular expression.
- *
- * @example
- * const regexp = expRegExp("[+-]");
- * console.log(regexp.source);
- * // -> ((\d+\.?|\.?\d+|\d+\.\d+)([+-])(\d+\.?|\.?\d+|\d+\.\d+))
- */
+function destructureBasically(exp: string, operator: BinaryOperator) {
+  const encodedExpression = encodeExpression(exp);
+  const operatorIndex = encodedExpression.indexOf(`*${operator}*`) + 1;
+  const [operand1, operand2] = splitAtIndex(exp, operatorIndex, false);
+  return [operand1, operand2];
+}
+
+function encodeExpression(exp: string) {
+  let encodedExp = exp;
+  for (let i = 0; i < exp.length; ) {
+    const ch = exp[i];
+    if (ch === "(") {
+      const len = getParenthesizedExpressionLen(exp.slice(i));
+      encodedExp = spliceString(encodedExp, i, len, "*".repeat(len));
+      i += len;
+      continue;
+    } else if (/[\d.]/.test(ch)) {
+      encodedExp = spliceString(encodedExp, i, 1, "*");
+    }
+    i++;
+  }
+  return encodedExp;
+}
+
+function destructure(
+  exp: string,
+  targetOperator: BinaryOperator,
+  includeOperandSignOutsideParens: boolean
+): DestructuredExpression {
+  exp = exp.trim();
+
+  let [operand1, operand2] = destructureBasically(
+    exp,
+    targetOperator
+  ) as Operands;
+  operand1 = operand1 as string;
+  operand2 = operand2 as string;
+
+  if (operand1.startsWith("(")) {
+    operand1 = operand1.slice(1, operand1.length - 1);
+    operand1 = doTheMath(operand1);
+  } else {
+    operand1 = Number(
+      operand1.slice(
+        includeOperandSignOutsideParens ? 0 : operand1.search(/[\d.]/)
+      )
+    );
+  }
+
+  if (operand2.startsWith("(")) {
+    operand2 = operand2.slice(1, operand2.length - 1);
+    operand2 = doTheMath(operand2);
+  } else {
+    operand2 = Number(operand2);
+  }
+
+  const missingSign = (
+    exp.startsWith("+") || exp.startsWith("-") ? exp[0] : ""
+  ) as PlusOrMinus;
+
+  return [
+    operand1,
+    targetOperator,
+    operand2,
+    includeOperandSignOutsideParens ? undefined : (missingSign as PlusOrMinus),
+  ];
+}
+
+const number = /(?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))/,
+  onlyNumber = /^(?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))$/,
+  percentage = /(\.\d+|\d+(\.\d*)?)%/g,
+  parenthesizedNumber = /(\((?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))\))/;
+
+interface SimpleMatch {
+  index: number;
+  length: number;
+}
+
+const expressionRegexp = /\*+[-+x÷^]\*+/;
+function isExpression(exp: string) {
+  exp = encodeExpression(exp);
+  const binaryOperatorIndex = exp.search(expressionRegexp);
+  return binaryOperatorIndex >= 0;
+}
+
+function indexOfAndLengthOfParenthesizedExp(exp: string): SimpleMatch | null {
+  for (let i = 0; i < exp.length; i++) {
+    const ch = exp[i];
+
+    if (ch === "(") {
+      const length = getParenthesizedExpressionLen(exp.slice(i)),
+        parensContents = exp.slice(i + 1, i + length - 1),
+        areContentsExpression = isExpression(parensContents);
+
+      if (areContentsExpression) {
+        return {
+          length: length,
+          index: i,
+        };
+      }
+    }
+  }
+
+  return null;
+}
+
+function getParenthesizedExpressionLen(exp: string) {
+  let openInside = 0,
+    length = 1;
+
+  for (let i = 1; i < exp.length; i++) {
+    const ch = exp[i];
+    if (ch === "(") {
+      openInside++;
+    } else if (ch === ")" && openInside === 0) {
+      length++;
+      break;
+    } else if (ch === ")") {
+      openInside--;
+    }
+
+    length++;
+  }
+
+  return length;
+}
+
 function expRegExp(operatorCharacterClass: string) {
   return new RegExp(
-    `(${number.source})(${operatorCharacterClass})(${number.source})`
+    `(${number.source}|${parenthesizedNumber.source})(${operatorCharacterClass})(${number.source}|${parenthesizedNumber.source})`
   );
 }
 
-/*
-These defines precedence. Multiplication and division are 
-performed first. Then addition and subtraction. */
 const firstExps = expRegExp("[\\^]"),
   secondExps = expRegExp("[x÷]"),
   thirdExps = expRegExp("[-+]");
 
 const precedenceRules = [firstExps, secondExps, thirdExps];
 
-/**
- * Destructures a simple mathematical expression like 1+5.
- *
- * @param exp
- * @returns - A tuple type whose elements are, respectively, the first term, the operator
- * and the second term.
- *
- * @example
- * destructureExpression("1+5");
- * // -> [1, "+", 5]
- * destructureExpression("10.35-5.5");
- * // -> [10.35, "-", 5.5]
+/** 
+ * These flags indicate whether or not the destructure
+ * function should include the sign before the first
+ * operand in the first operand, if any.
  */
-function destructureExpression(
-  exp: string
-): [term1: number, operator: string, term2: number] {
-  const firstTermMatch = number.exec(exp)!,
-    term1 = firstTermMatch[0],
-    rest = exp.slice(term1.length),
-    operator = rest[0],
-    term2 = rest.slice(1);
+const missingSignFlags = {
+  x: false,
+  "+": true,
+  "-": true,
+  "÷": false,
+  "^": false,
+} as const;
 
-  return [Number(term1), operator, Number(term2)];
+function destructureExpression(exp: string): DestructuredExpression {
+  const encodedExp = encodeExpression(exp),
+    operator = /\*+(?<operator>.)\*+/.exec(encodedExp)!.groups!
+      .operator as BinaryOperator;
+
+  return destructure(exp, operator, missingSignFlags[operator]);
 }
 
-/**
- * Solves a mathematical expression.
- *
- * @returns - The result of the calculations.
- */
-function doTheMath(exp: string): number {
+function doTheMath(exp: string) {
   checkValidity(exp);
 
-  if (onlyNumber.test(exp)) {
-    return Number(exp);
-  }
+  if (onlyNumber.test(exp)) return Number(exp);
 
-  exp = addMissingMultiplicationSigns(exp);
+  exp = addImplicitOperations(exp);
   exp = replacePercentages(exp);
+  exp = removeUnnecessaryParens(exp);
 
-  while (exp.includes("(")) {
-    const bracketExpressionMatch = bracketExpression.exec(exp)!,
-      { index } = bracketExpressionMatch,
-      bracketExpressionString = bracketExpressionMatch[0],
-      matchLength = bracketExpressionString.length,
-      innerExp = bracketExpressionString.slice(1, matchLength - 1);
+  let parenMatch: SimpleMatch | null;
+  while ((parenMatch = indexOfAndLengthOfParenthesizedExp(exp))) {
+    const { index, length } = parenMatch;
+    const subexp = exp.slice(index + 1, index + length - 1);
+    const result = doTheMath(subexp);
 
-    const result = doTheMath(innerExp).toString();
-    exp = spliceString(exp, index, matchLength, result);
-    exp = fixSigns(exp);
+    exp = spliceString(exp, index, length, `(${result})`);
+    exp = addImplicitOperations(exp);
+    exp = replacePercentages(exp);
+    exp = removeUnnecessaryParens(exp);
   }
 
-  if (onlyNumber.test(exp)) {
-    return Number(exp);
-  }
+  if (onlyNumber.test(exp)) return Number(exp);
 
-  exp = precedenceRules.reduce(solveExpressions, exp);
+  exp = precedenceRules.reduce(solveBinaryExpressions, exp);
 
+  if (exp.startsWith("(")) exp = exp.slice(1, exp.length - 1);
   return Number(exp);
 }
 
-function addMissingMultiplicationSigns(exp: string) {
+const unnecessarilyParenthesizedNumber = /\((?:\+?(\d+(?:\.\d*)?|\.\d+))\)/g;
+function removeUnnecessaryParens(exp: string) {
+  while (unnecessarilyParenthesizedNumber.test(exp)) {
+    exp = exp.replaceAll(unnecessarilyParenthesizedNumber, "$1");
+  }
+  return exp;
+}
+
+function addImplicitOperations(exp: string) {
   exp = exp.replaceAll(")(", ")x(");
-  /* 
-  the dot assumes that the expression is valid and we have something like 5.(2) or (5).5 
-  which results in 5x2 and 5x0.5, respectively.
-  */
+
   exp = exp.replace(/(\d|\.)\(/g, "$1x(");
   exp = exp.replace(/\)(\d|\.)/g, ")x$1");
-  exp = exp.replace(/%(\(|\d)/, "%x$1");
+  exp = exp.replace(/%(\(|\d)/g, "%x$1");
+  exp = exp.replace(/[^\)\d.]([-+])\(/g, (_, sign) => {
+    let replacement = `(${sign === "+" ? "" : sign}1)x(`;
+    return replacement;
+  });
+  exp = exp.replaceAll(")%", ")÷100");
 
   return exp;
 }
 
 function replacePercentages(exp: string) {
-  exp = exp.replaceAll(percentage, "($1÷100)");
+  exp = exp.replaceAll(percentage, (_, number) => {
+    return `${number / 100}`;
+  });
   return exp;
 }
 
-function fixSigns(exp: string) {
-  exp = exp.replaceAll("+-", "-");
-  exp = exp.replaceAll("-+", "-");
-  exp = exp.replaceAll("--", "+");
-  exp = exp.replaceAll("++", "+");
-  return exp;
-}
-
-/**
- * Solves expressions in a bigger expression based on the regular expression
- * passed in.
- *
- * @param exp - The whole expression.
- * @param targetExpressionRegExp - The regular expression that matches the
- * smaller expressions that need to be solved.
- * @returns - An expression with the required expressions solved.
- *
- * For example, suppose `multiplicationRegExp` is an expression that matches
- * multiplications expressions like 8x5:
- * @example
- * const additions = solveExpressions("1+1+2x7", multiplicationRegExp);
- * // -> additions is "1+2+14"
- */
-function solveExpressions(exp: string, targetExpressionRegExp: RegExp) {
+function solveBinaryExpressions(exp: string, targetExpressionRegExp: RegExp) {
   while (exp.search(targetExpressionRegExp) !== -1) {
     const match = targetExpressionRegExp.exec(exp)!;
-    if (!match) break;
     const expression = match[0],
       { index } = match;
-    const [term1, operator, term2] = destructureExpression(expression);
+    const [operand1, operator, operand2, missingSign] =
+      destructureExpression(expression);
 
-    const operatorFunc = operatorsFunctions[operator as Operator],
-      result = operatorFunc(term1, term2);
+    const operatorFunc = binaryOperatorsEvaluators[operator as BinaryOperator],
+      result = operatorFunc(operand1, operand2);
     if (exp.length === expression.length) {
-      exp = result.toString();
+      exp = (missingSign || "") + result.toString();
+
       continue;
     }
-    let before = exp.substring(0, index),
-      after = exp.substring(index + expression.length);
-    if (before !== "" && result >= 0) {
-      before += "+";
+
+    let resultStr = `(${missingSign || ""}${result})`;
+    const before = exp.slice(0, index);
+    if (result >= 0 && before !== "" && !/[-+x^÷]$/.test(before)) {
+      resultStr = "+" + resultStr;
     }
-    exp = before + result + after;
+    exp = spliceString(exp, index, expression.length, `${resultStr}`);
   }
 
   return exp;
@@ -317,31 +416,24 @@ const tooBigNumber = new RegExp(
     String.raw`\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`
     // if there's an 'e' in the expression then we're messing with really big numbers already
   ),
-  multipleOperators = /([-+÷x^]{2,}|%{2,}|[-+÷x^]+%+)/,
-  multipleDots = /(\.{2,})/,
-  missingOperand = /(\d+[-+÷x^])$/,
+  multipleOperators = /(?:[-+÷x^]{2,}|%{2,}|[-+÷x^]+%+)/,
+  multipleDots = /(?:\.{2,})/,
+  missingOperand = /(?:\d+[-+÷x^])$/,
   invalidDot = /\D\.\D/,
-  invalidDotAlone = /^(\.|\.\D|\D\.)$/,
+  invalidDotAlone = /^(?:\.|\.\D|\D\.)$/,
   invalidNaNOrInfinity = /NaN|Infinity/,
   singleOperator = /^[-+÷x^%]$/,
   emptyParenthesis = /\(\)/,
   singleBracket = /^(\(|\))$/,
   operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/,
-  invalidDecimal = /\d*(\.\d*){2,}/,
+  invalidDecimal = /\d*(?:\.\d*){2,}/,
   invalidOperator = /^[÷x^%]/;
 
-/**
- * A check for an error in a piece of text.
- */
 interface ErrorCheck {
-  /** A regular expression matching an error in a piece of text. */
   test: RegExp;
-  /**
-   * The message to show the user when the error occurs. The first star character (`'*'`) in this message
-   * is replaced by the part of the text that matches the error.
-   */
+
   message: string;
-  /** The construct to construct the error. */
+
   ErrorConstructor: typeof Error;
 }
 
@@ -413,19 +505,8 @@ const errorTests: ErrorCheck[] = [
   },
 ];
 
-/**
- * Checks if all parenthesis, if present, in an expression are opened and closed properly.
- *
- * @param exp - The expression.
- * @returns - A boolen that tells whether all parenthesis are properly closed.
- */
 function checkClosedParenthesis(exp: string): boolean {
   let open = 0,
-    /* 
-    need this flag because if the first bracket in the expression
-    is a closing parenthesis, then open will be zero and the
-    algorithm fails, returning true when the expression is invalid
-    */
     valid = true;
 
   for (const ch of exp) {
