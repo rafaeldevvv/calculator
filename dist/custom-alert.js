@@ -4,15 +4,16 @@ export function createAlert(announcement) {
     customAlert.textContent = announcement;
     return customAlert;
 }
-let currentTimeout;
-export default function announce(announcement, options) {
+let currentTimeout, showingAlert = false, animationDuration;
+export default function alertUser(announcement, options) {
     var _a;
-    const { time = 12000 } = options || {};
+    const { duration = 10000 } = options || {};
     clearTimeout(currentTimeout);
     (_a = document.querySelector("[role=alert]")) === null || _a === void 0 ? void 0 : _a.remove();
     const customAlert = createAlert(announcement.toString());
     document.body.appendChild(customAlert);
-    const animationDuration = Math.min(0.1 * time, 300);
+    showingAlert = true;
+    animationDuration = Math.min(0.1 * duration, 300);
     const animationOptions = {
         duration: animationDuration,
         iterations: 1,
@@ -20,11 +21,26 @@ export default function announce(announcement, options) {
     };
     fadeInDown(customAlert, animationOptions);
     currentTimeout = setTimeout(() => {
-        fadeOutUp(customAlert, animationOptions, () => {
-            customAlert.remove();
-        });
+        dismiss();
         currentTimeout = undefined;
-    }, time - animationDuration);
+    }, duration - animationDuration);
+}
+export function dismiss() {
+    if (!showingAlert)
+        return;
+    const animationOptions = {
+        duration: animationDuration,
+        iterations: 1,
+        fill: "both",
+    };
+    const customAlert = document.querySelector("[role='alert']");
+    clearTimeout(currentTimeout);
+    currentTimeout = undefined;
+    fadeOutUp(customAlert, animationOptions, () => {
+        customAlert.remove();
+        showingAlert = false;
+        animationDuration = undefined;
+    });
 }
 function fadeInDown(element, options) {
     element.animate([

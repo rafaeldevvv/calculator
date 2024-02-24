@@ -1,4 +1,4 @@
-import alertUser from "./custom-alert.js";
+import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
@@ -72,17 +72,24 @@ symbolKeys.forEach((k) => {
         expression += symbol;
         updateCalculatorExpression(expression);
         announceExpression();
+        dismissAlert();
     });
 });
 resetKey.addEventListener("click", () => {
     expression = "";
     updateCalculatorExpression(expression);
     announceExpression();
+    dismissAlert();
 });
-delKey.addEventListener("click", deleteLastSymbol);
+delKey.addEventListener("click", () => {
+    deleteLastSymbol();
+    dismissAlert();
+});
 window.addEventListener("keydown", (e) => {
-    if (e.key === "Backspace")
+    if (e.key === "Backspace") {
         deleteLastSymbol();
+        dismissAlert();
+    }
 });
 resultKey.addEventListener("click", showResult);
 function showResult() {
