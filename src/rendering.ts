@@ -1,4 +1,5 @@
 import type { HistoryEntry } from "./types";
+import { formatNumbers } from "./utils.js";
 
 export function renderHistoryEntry(entry: HistoryEntry) {
   return `
@@ -11,11 +12,11 @@ export function renderHistoryEntry(entry: HistoryEntry) {
       >
          <span class="history-entry__expression block">
          <strong>expression</strong>: ${prepareExpressionForPresentation(
-           entry.expression
+           formatNumbers(entry.expression)
          )}
          </span>
          <span class="history-entry__result block mt-1">
-         <strong>result</strong>: ${entry.result}
+         <strong>result</strong>: ${entry.result.toLocaleString()}
          </span>
       </button>
    `;

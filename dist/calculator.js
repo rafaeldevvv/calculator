@@ -3,7 +3,7 @@ import { announcePolitely } from "./visually-hidden-announcer.js";
 import managePopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
 import { renderHistoryEntries, prepareExpressionForPresentation, } from "./rendering.js";
-import { spliceString, splitAtIndex } from "./utils.js";
+import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
 managePopupMenu(document.querySelector(".js-menu-parent"));
 let expression = "";
 function announceExpression() {
@@ -23,10 +23,11 @@ function animateExpression() {
         { opacity: 1, transform: "translateY(0%)" },
     ], { duration: 500, fill: "forwards" });
 }
-function updateCalculatorExpression(exp, animate = false) {
-    expressionContent.innerHTML = prepareExpressionForPresentation(exp);
+function updateCalculatorExpression(exp, isResult = false) {
+    let contents = formatNumbers(exp);
+    expressionContent.innerHTML = prepareExpressionForPresentation(contents);
     expressionContainer.scrollLeft = expressionContainer.scrollWidth;
-    if (animate) {
+    if (isResult) {
         animateExpression();
     }
 }

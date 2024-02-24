@@ -6,7 +6,7 @@ import {
   renderHistoryEntries,
   prepareExpressionForPresentation,
 } from "./rendering.js";
-import { spliceString, splitAtIndex } from "./utils.js";
+import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
 
 managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
@@ -52,11 +52,12 @@ function animateExpression() {
   );
 }
 
-function updateCalculatorExpression(exp: string, animate = false) {
-  expressionContent.innerHTML = prepareExpressionForPresentation(exp);
+function updateCalculatorExpression(exp: string, isResult = false) {
+  let contents = formatNumbers(exp);
+  expressionContent.innerHTML = prepareExpressionForPresentation(contents);
   expressionContainer.scrollLeft = expressionContainer.scrollWidth;
 
-  if (animate) {
+  if (isResult) {
     animateExpression();
   }
 }

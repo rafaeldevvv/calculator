@@ -22,3 +22,9 @@ export function splitAtIndex(str, index, includeCharacterAtIndex = true) {
         return [str.slice(0, index), str.slice(index + 1)];
     }
 }
+export function formatNumbers(exp) {
+    return exp.replace(/([^.\d]|^)(\d+)/g, (_, chBefore, number) => {
+        const n = Number(number);
+        return (chBefore || "") + n.toLocaleString("en");
+    });
+}

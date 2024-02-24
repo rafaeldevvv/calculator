@@ -1,3 +1,4 @@
+import { formatNumbers } from "./utils.js";
 export function renderHistoryEntry(entry) {
     return `
       <button
@@ -8,10 +9,10 @@ export function renderHistoryEntry(entry) {
          data-entry-id="${entry.id}"
       >
          <span class="history-entry__expression block">
-         <strong>expression</strong>: ${prepareExpressionForPresentation(entry.expression)}
+         <strong>expression</strong>: ${prepareExpressionForPresentation(formatNumbers(entry.expression))}
          </span>
          <span class="history-entry__result block mt-1">
-         <strong>result</strong>: ${entry.result}
+         <strong>result</strong>: ${entry.result.toLocaleString()}
          </span>
       </button>
    `;
