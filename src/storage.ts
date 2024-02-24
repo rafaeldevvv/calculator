@@ -1,5 +1,4 @@
 import type { CalculatorData, BareHistoryEntry } from "./types";
-import { lastItem } from "./utils.js";
 
 const savedData = localStorage.getItem("calculator");
 
@@ -22,6 +21,12 @@ export function save<Key extends keyof CalculatorData>(
 }
 
 export function addHistoryEntry(entry: BareHistoryEntry) {
+  /* if it is Infinity or NaN, then save it as a string 
+  because JSON.stringify turns NaN and Infinity into null */
+  if (!Number.isFinite(entry.result)) {
+    entry.result = entry.result.toString();
+  }
+
   const lastEntry = calculatorData.history[0];
   /* gotta check for undefined here because history might be empty */
   const lastId = lastEntry !== undefined ? lastEntry.id : -1;

@@ -1,18 +1,19 @@
 import { formatNumbers } from "./utils.js";
 export function renderHistoryEntry(entry) {
+    const { id, expression, result } = entry;
     return `
       <button
          type="button"
          role="menuitem"
          class="history-entry text-primary block text-left px-2 rounded capitalize"
          data-close-on-click
-         data-entry-id="${entry.id}"
+         data-entry-id="${id}"
       >
          <span class="history-entry__expression block">
-         <strong>expression</strong>: ${prepareExpressionForPresentation(formatNumbers(entry.expression))}
+         <strong>expression</strong>: ${prepareExpressionForPresentation(formatNumbers(expression))}
          </span>
          <span class="history-entry__result block mt-1">
-         <strong>result</strong>: ${entry.result.toLocaleString()}
+         <strong>result</strong>: ${typeof result === "string" ? result : result.toLocaleString()}
          </span>
       </button>
    `;
