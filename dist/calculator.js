@@ -219,7 +219,7 @@ const missingSignFlags = {
     "÷": false,
     "^": false,
 };
-function destructureExpression(exp) {
+function destructureOperation(exp) {
     const encodedExp = encodeExpression(exp), operator = /\*+(?<operator>.)\*+/.exec(encodedExp).groups
         .operator;
     return destructure(exp, operator, missingSignFlags[operator]);
@@ -242,7 +242,7 @@ function doTheMath(exp) {
     }
     if (onlyNumber.test(exp))
         return Number(exp);
-    exp = precedenceRules.reduce(solveBinaryExpressions, exp);
+    exp = precedenceRules.reduce(solveBinaryOperations, exp);
     if (exp.startsWith("("))
         exp = exp.slice(1, exp.length - 1);
     return Number(exp);
@@ -275,11 +275,11 @@ function replacePercentages(exp) {
     });
     return exp;
 }
-function solveBinaryExpressions(exp, targetExpressionRegExp) {
-    while (exp.search(targetExpressionRegExp) !== -1) {
-        const match = targetExpressionRegExp.exec(exp);
+function solveBinaryOperations(exp, targetOperationRegExp) {
+    while (exp.search(targetOperationRegExp) !== -1) {
+        const match = targetOperationRegExp.exec(exp);
         const expression = match[0], { index } = match;
-        const [operand1, operator, operand2, missingSign] = destructureExpression(expression);
+        const [operand1, operator, operand2, missingSign] = destructureOperation(expression);
         const operatorFunc = binaryOperatorsEvaluators[operator], result = operatorFunc(operand1, operand2);
         if (exp.length === expression.length) {
             exp = `${missingSign || ""}(${result})`;

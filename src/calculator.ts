@@ -280,6 +280,16 @@ function indexOfAndLengthOfParenthesizedExp(exp: string): SimpleMatch | null {
   return null;
 }
 
+/**
+ * Returns the parenthesized expression length. It is useful 
+ * because you don't need to know where the parenthesized 
+ * expression ends to know its length.
+ * 
+ * The parenthesized expression is something like "(67x(56-26))".
+ * 
+ * @param exp - An expression starting with an opening bracket (`(`), like `"(67x(56-26))+56"`
+ * @returns - The length of the parenthesized expression.
+ */
 function getParenthesizedExpressionLen(exp: string) {
   let openInside = 0,
     length = 1;
@@ -326,7 +336,15 @@ const missingSignFlags = {
   "^": false,
 } as const;
 
-function destructureExpression(exp: string): DestructuredExpression {
+/**
+ * Destructures a binary operation like -5^(-3).
+ * 
+ * @param exp The binary operation.
+ * @returns - A tuple whose elements represent the first operand, the 
+ * operator, the second operand and a sign that may not be taken into
+ * account in the calculations, respectively.
+ */
+function destructureOperation(exp: string): DestructuredExpression {
   const encodedExp = encodeExpression(exp),
     operator = /\*+(?<operator>.)\*+/.exec(encodedExp)!.groups!
       .operator as BinaryOperator;
@@ -334,12 +352,25 @@ function destructureExpression(exp: string): DestructuredExpression {
   return destructure(exp, operator, missingSignFlags[operator]);
 }
 
+/** 
+ * Prepares the expression for calculation. It adds implicit operations, 
+ * deals with percentages and removes unnecessary parentheses from the 
+ * expression. 
+ * 
+ * @param exp The expression.
+ */
 function prepareExpression(exp: string) {
   return removeUnnecessaryParens(
     replacePercentages(addImplicitOperations(exp))
   );
 }
 
+/**
+ * Does the math, of course.
+ * 
+ * @param exp The expression to solve.
+ * @returns - The result of the expression.
+ */
 function doTheMath(exp: string) {
   checkValidity(exp);
 
@@ -359,7 +390,7 @@ function doTheMath(exp: string) {
 
   if (onlyNumber.test(exp)) return Number(exp);
 
-  exp = precedenceRules.reduce(solveBinaryExpressions, exp);
+  exp = precedenceRules.reduce(solveBinaryOperations, exp);
 
   if (exp.startsWith("(")) exp = exp.slice(1, exp.length - 1);
   return Number(exp);
@@ -379,6 +410,12 @@ function removeUnnecessaryParens(exp: string) {
   return exp;
 }
 
+/**
+ * Adds operations that are implicit in the user's input.
+ * 
+ * @param exp The user expression input.
+ * @returns The expression but with implicit operations made explicit.
+ */
 function addImplicitOperations(exp: string) {
   exp = exp.replaceAll(")(", ")x(");
 
@@ -401,13 +438,22 @@ function replacePercentages(exp: string) {
   return exp;
 }
 
-function solveBinaryExpressions(exp: string, targetExpressionRegExp: RegExp) {
-  while (exp.search(targetExpressionRegExp) !== -1) {
-    const match = targetExpressionRegExp.exec(exp)!;
+/**
+ * Solves binary operations, i.e. operations like 5+5 where we have
+ * an operator and two operands.
+ * 
+ * @param exp A whole expression like 5x8+89-90.
+ * @param targetOperationRegExp A regular expression that matches the operation you want to perform.
+ * @returns Another expression, but with the specified binary operations solved 
+ * and their results properly replace them in the previous expression.
+ */
+function solveBinaryOperations(exp: string, targetOperationRegExp: RegExp) {
+  while (exp.search(targetOperationRegExp) !== -1) {
+    const match = targetOperationRegExp.exec(exp)!;
     const expression = match[0],
       { index } = match;
     const [operand1, operator, operand2, missingSign] =
-      destructureExpression(expression);
+      destructureOperation(expression);
 
     const operatorFunc = binaryOperatorsEvaluators[operator as BinaryOperator],
       result = operatorFunc(operand1, operand2);
