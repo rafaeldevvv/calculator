@@ -334,14 +334,18 @@ function destructureExpression(exp: string): DestructuredExpression {
   return destructure(exp, operator, missingSignFlags[operator]);
 }
 
+function prepareExpression(exp: string) {
+  return removeUnnecessaryParens(
+    replacePercentages(addImplicitOperations(exp))
+  );
+}
+
 function doTheMath(exp: string) {
   checkValidity(exp);
 
   if (onlyNumber.test(exp)) return Number(exp);
 
-  exp = addImplicitOperations(exp);
-  exp = replacePercentages(exp);
-  exp = removeUnnecessaryParens(exp);
+  exp = prepareExpression(exp);
 
   let parenMatch: SimpleMatch | null;
   while ((parenMatch = indexOfAndLengthOfParenthesizedExp(exp))) {
@@ -350,9 +354,7 @@ function doTheMath(exp: string) {
     const result = doTheMath(subexp);
 
     exp = spliceString(exp, index, length, `(${result})`);
-    exp = addImplicitOperations(exp);
-    exp = replacePercentages(exp);
-    exp = removeUnnecessaryParens(exp);
+    exp = prepareExpression(exp);
   }
 
   if (onlyNumber.test(exp)) return Number(exp);
@@ -363,10 +365,16 @@ function doTheMath(exp: string) {
   return Number(exp);
 }
 
-const unnecessarilyParenthesizedNumber = /\((?:\+?(\d+(?:\.\d*)?|\.\d+))\)/g;
+const unnecessarilyParenthesizedPositiveNumber =
+    /\((?:\+?(\d+(?:\.\d*)?|\.\d+))\)/g,
+  unnecessarilyParenthesizedNegativeNumber =
+    /(^|[^-+x^÷])\((?:\-(\d+(?:\.\d*)?|\.\d+))\)($|[^-+x^÷])/g;
 function removeUnnecessaryParens(exp: string) {
-  while (unnecessarilyParenthesizedNumber.test(exp)) {
-    exp = exp.replaceAll(unnecessarilyParenthesizedNumber, "$1");
+  while (unnecessarilyParenthesizedPositiveNumber.test(exp)) {
+    exp = exp.replaceAll(unnecessarilyParenthesizedPositiveNumber, "$1");
+  }
+  while (unnecessarilyParenthesizedNegativeNumber.test(exp)) {
+    exp = exp.replace(unnecessarilyParenthesizedNegativeNumber, "$1-$2$3");
   }
   return exp;
 }
@@ -377,7 +385,7 @@ function addImplicitOperations(exp: string) {
   exp = exp.replace(/(\d|\.)\(/g, "$1x(");
   exp = exp.replace(/\)(\d|\.)/g, ")x$1");
   exp = exp.replace(/%(\(|\d)/g, "%x$1");
-  exp = exp.replace(/[^\)\d.]([-+])\(/g, (_, sign) => {
+  exp = exp.replace(/(?:[^\)\d.]|^)([-+])\(/g, (_, sign) => {
     let replacement = `(${sign === "+" ? "" : sign}1)x(`;
     return replacement;
   });
@@ -404,17 +412,19 @@ function solveBinaryExpressions(exp: string, targetExpressionRegExp: RegExp) {
     const operatorFunc = binaryOperatorsEvaluators[operator as BinaryOperator],
       result = operatorFunc(operand1, operand2);
     if (exp.length === expression.length) {
-      exp = (missingSign || "") + result.toString();
+      exp = `${missingSign || ""}(${result})`;
+      exp = prepareExpression(exp);
 
       continue;
     }
 
     let resultStr = `(${missingSign || ""}${result})`;
+
     const before = exp.slice(0, index);
-    if (result >= 0 && before !== "" && !/[-+x^÷]$/.test(before)) {
+    if (result >= 0 && before !== "" && !/[-+x^÷]$/.test(before))
       resultStr = "+" + resultStr;
-    }
     exp = spliceString(exp, index, expression.length, `${resultStr}`);
+    exp = prepareExpression(exp);
   }
 
   return exp;
