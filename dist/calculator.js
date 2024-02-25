@@ -14,7 +14,7 @@ function announceExpression() {
         announcePolitely("Expression is empty");
     }
 }
-const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content"), historyMenu = document.querySelector("#history-menu"), historyDescription = document.querySelector("#history-description");
+const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), copyButton = calculator.querySelector(".js-copy-button"), copyIcon = copyButton.querySelector(".js-icon"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content"), historyMenu = document.querySelector("#history-menu"), historyDescription = document.querySelector("#history-description");
 function animateExpression() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches)
         return;
@@ -93,6 +93,17 @@ window.addEventListener("keydown", (e) => {
     }
 });
 resultKey.addEventListener("click", showResult);
+copyButton.addEventListener("click", () => {
+    navigator.clipboard.writeText(expression).then(() => {
+        announcePolitely("copied!");
+        copyIcon.classList.remove("fa-copy");
+        copyIcon.classList.add("fa-check");
+        setTimeout(() => {
+            copyIcon.classList.remove("fa-check");
+            copyIcon.classList.add("fa-copy");
+        }, 1500);
+    });
+});
 function showResult() {
     if (expression.length === 0)
         return;

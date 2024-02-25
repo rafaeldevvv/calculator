@@ -29,6 +29,8 @@ const calculator = document.querySelector(".js-calculator") as HTMLElement,
   resetKey = calculator.querySelector(".js-reset-key") as HTMLButtonElement,
   delKey = calculator.querySelector(".js-del-key") as HTMLButtonElement,
   resultKey = calculator.querySelector(".js-result-key") as HTMLButtonElement,
+  copyButton = calculator.querySelector(".js-copy-button") as HTMLButtonElement,
+  copyIcon = copyButton.querySelector(".js-icon") as HTMLElement,
   expressionContainer = calculator.querySelector(
     ".js-expression-container"
   ) as HTMLElement,
@@ -134,6 +136,18 @@ window.addEventListener("keydown", (e) => {
 });
 
 resultKey.addEventListener("click", showResult);
+
+copyButton.addEventListener("click", () => {
+  navigator.clipboard.writeText(expression).then(() => {
+    announcePolitely("copied!")
+    copyIcon.classList.remove("fa-copy");
+    copyIcon.classList.add("fa-check");
+    setTimeout(() => {
+      copyIcon.classList.remove("fa-check");
+      copyIcon.classList.add("fa-copy");
+    }, 1500);
+  });
+});
 
 function showResult() {
   if (expression.length === 0) return;

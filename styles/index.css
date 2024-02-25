@@ -321,6 +321,10 @@ ul {
    row-gap: .25rem;
 }
 
+.gap-x-1 {
+   column-gap: 1rem;
+}
+
 .mt-1 {
    margin-top: 0.5rem;
 }
@@ -510,7 +514,7 @@ ul {
    gap: clamp(.5rem, 4vw, 1.5rem);
 }
 
-.expression {
+.expression-container {
    --scrollbar-fg: hsl(var(--c-text-primary));
    --scrollbar-bg: hsl(var(--c-tertiary));
 
@@ -519,6 +523,7 @@ ul {
    text-wrap: nowrap;
    overflow-y: hidden;
    padding-inline: 3.5rem 1rem;
+   border-radius: .6rem .6rem 0 0;
 
    scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
 }
@@ -533,61 +538,42 @@ ul {
    margin-inline: .1rem;
 }
 
-.expression::-webkit-scrollbar {
+.expression-container::-webkit-scrollbar {
    height: 10px;
 }
 
-.expression::-webkit-scrollbar-thumb {
+.expression-container::-webkit-scrollbar-thumb {
    background-color: var(--scrollbar-fg);
 }
 
-.expression::-webkit-scrollbar-track {
+.expression-container::-webkit-scrollbar-track {
    background-color: var(--scrollbar-bg);
 }
 
-.history-btn {
-   outline: 0;
-}
-
-.history-btn::before {
-   content: '';
-   display: block;
-   inset: 0;
-   position: absolute;
-   border-radius: 50%;
-}
-
-.history-btn::after {
-   content: '';
-   display: block;
-   inset: 0;
-   position: absolute;
-   border-radius: 50%;
-   transform: scale(2);
+.controls {
+   margin-top: 1px;
    background-color: hsl(var(--c-tertiary));
-   z-index: -1;
+   padding: .5rem 1rem;
+   border-radius: 0 0 .6rem .6rem;
 }
 
-.history-btn:hover::before,
-.history-btn:focus-visible::before {
-   background-color: hsl(var(--c-text-primary) /.2);
-   transform: scale(2);
+.history-btn,
+.copy-button {
+   opacity: .7;
 }
 
-.history-btn:active {
+.history-btn:hover,
+.copy-button:hover {
+   opacity: 1;
+}
+
+.history-btn:active,
+.copy-button:active {
    transform: scale(.8);
 }
 
 .history-btn[aria-expanded="false"]+* {
    display: none;
-}
-
-.menu-parent {
-   top: 50%;
-   transform: translateY(-50%);
-   left: 1rem;
-
-   z-index: 900;
 }
 
 .history-menu-container {
@@ -599,6 +585,7 @@ ul {
    width: min(23rem, 80vw);
    max-height: 20rem;
    overflow-y: scroll;
+   z-index: 9999;
 
    --scrollbar-fg: hsl(var(--c-text-primary) / .4);
    --scrollbar-bg: transparent;
