@@ -10,7 +10,8 @@ import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
 
 managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
 
-let expression = "";
+let expression = "",
+  previousExpressions = [expression];
 
 function announceExpression() {
   if (expression) {
@@ -54,7 +55,7 @@ function animateExpression() {
   );
 }
 
-function updateCalculatorExpression(exp: string, isResult = false) {
+function updateExpressionDOM(exp: string, isResult = false) {
   let contents = formatNumbers(exp);
   expressionContent.innerHTML = prepareExpressionForPresentation(contents);
   expressionContainer.scrollLeft = expressionContainer.scrollWidth;
@@ -64,13 +65,19 @@ function updateCalculatorExpression(exp: string, isResult = false) {
   }
 }
 
+function updateExpression(newExp: string) {
+  previousExpressions.push(expression);
+  expression = newExp;
+  announceExpression();
+}
+
 const listenedHistoryIds: number[] = [];
 
 function handleEntryClick(id: number) {
   const entry = storage.get("history").find((e) => e.id === id)!;
-  expression = entry.expression;
-  updateCalculatorExpression(expression, true);
-  announceExpression();
+
+  updateExpression(entry.expression);
+  updateExpressionDOM(expression, true);
 }
 
 function registerHistoryEntriesListeners() {
@@ -98,9 +105,8 @@ function updateHistory() {
 updateHistory();
 
 function deleteLastSymbol() {
-  expression = expression.slice(0, expression.length - 1);
-  updateCalculatorExpression(expression);
-  announceExpression();
+  updateExpression(expression.slice(0, expression.length - 1));
+  updateExpressionDOM(expression);
 }
 
 symbolKeys.forEach((k) => {
@@ -109,17 +115,15 @@ symbolKeys.forEach((k) => {
     if (expression.includes("NaN") || expression.includes("Infinity")) {
       expression = "";
     }
-    expression += symbol;
-    updateCalculatorExpression(expression);
-    announceExpression();
+    updateExpression(expression + symbol);
+    updateExpressionDOM(expression);
     dismissAlert();
   });
 });
 
 resetKey.addEventListener("click", () => {
-  expression = "";
-  updateCalculatorExpression(expression);
-  announceExpression();
+  updateExpression("");
+  updateExpressionDOM(expression);
   dismissAlert();
 });
 
@@ -129,7 +133,12 @@ delKey.addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (e) => {
-  if (e.key === "Backspace") {
+  if (e.ctrlKey) {
+    if (e.key == "z") {
+      expression = previousExpressions.pop() || "";
+      updateExpressionDOM(expression);
+    }
+  } else if (e.key === "Backspace") {
     deleteLastSymbol();
     dismissAlert();
   }
@@ -156,9 +165,9 @@ function showResult() {
 
     storage.addHistoryEntry({ expression, result });
 
-    expression = result.toString();
+    updateExpression(result.toString());
     updateHistory();
-    updateCalculatorExpression(expression, true);
+    updateExpressionDOM(expression, true);
     announcePolitely(`The result is ${result}`);
   } catch (err) {
     alertUser(err as any);

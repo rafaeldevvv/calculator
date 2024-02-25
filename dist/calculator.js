@@ -5,7 +5,7 @@ import * as storage from "./storage.js";
 import { renderHistoryEntries, prepareExpressionForPresentation, } from "./rendering.js";
 import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
 managePopupMenu(document.querySelector(".js-menu-parent"));
-let expression = "";
+let expression = "", previousExpressions = [expression];
 function announceExpression() {
     if (expression) {
         announcePolitely(`Current expression is ${expression}`);
@@ -23,7 +23,7 @@ function animateExpression() {
         { opacity: 1, transform: "translateY(0%)" },
     ], { duration: 500, fill: "forwards" });
 }
-function updateCalculatorExpression(exp, isResult = false) {
+function updateExpressionDOM(exp, isResult = false) {
     let contents = formatNumbers(exp);
     expressionContent.innerHTML = prepareExpressionForPresentation(contents);
     expressionContainer.scrollLeft = expressionContainer.scrollWidth;
@@ -31,12 +31,16 @@ function updateCalculatorExpression(exp, isResult = false) {
         animateExpression();
     }
 }
+function updateExpression(newExp) {
+    previousExpressions.push(expression);
+    expression = newExp;
+    announceExpression();
+}
 const listenedHistoryIds = [];
 function handleEntryClick(id) {
     const entry = storage.get("history").find((e) => e.id === id);
-    expression = entry.expression;
-    updateCalculatorExpression(expression, true);
-    announceExpression();
+    updateExpression(entry.expression);
+    updateExpressionDOM(expression, true);
 }
 function registerHistoryEntriesListeners() {
     const entries = historyMenu.querySelectorAll("[role=menuitem]");
@@ -60,9 +64,8 @@ function updateHistory() {
 }
 updateHistory();
 function deleteLastSymbol() {
-    expression = expression.slice(0, expression.length - 1);
-    updateCalculatorExpression(expression);
-    announceExpression();
+    updateExpression(expression.slice(0, expression.length - 1));
+    updateExpressionDOM(expression);
 }
 symbolKeys.forEach((k) => {
     const symbol = k.getAttribute("data-symbol");
@@ -70,16 +73,14 @@ symbolKeys.forEach((k) => {
         if (expression.includes("NaN") || expression.includes("Infinity")) {
             expression = "";
         }
-        expression += symbol;
-        updateCalculatorExpression(expression);
-        announceExpression();
+        updateExpression(expression + symbol);
+        updateExpressionDOM(expression);
         dismissAlert();
     });
 });
 resetKey.addEventListener("click", () => {
-    expression = "";
-    updateCalculatorExpression(expression);
-    announceExpression();
+    updateExpression("");
+    updateExpressionDOM(expression);
     dismissAlert();
 });
 delKey.addEventListener("click", () => {
@@ -87,7 +88,13 @@ delKey.addEventListener("click", () => {
     dismissAlert();
 });
 window.addEventListener("keydown", (e) => {
-    if (e.key === "Backspace") {
+    if (e.ctrlKey) {
+        if (e.key == "z") {
+            expression = previousExpressions.pop() || "";
+            updateExpressionDOM(expression);
+        }
+    }
+    else if (e.key === "Backspace") {
         deleteLastSymbol();
         dismissAlert();
     }
@@ -110,9 +117,9 @@ function showResult() {
     try {
         const result = doTheMath(expression);
         storage.addHistoryEntry({ expression, result });
-        expression = result.toString();
+        updateExpression(result.toString());
         updateHistory();
-        updateCalculatorExpression(expression, true);
+        updateExpressionDOM(expression, true);
         announcePolitely(`The result is ${result}`);
     }
     catch (err) {
