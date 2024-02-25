@@ -281,12 +281,12 @@ function indexOfAndLengthOfParenthesizedExp(exp: string): SimpleMatch | null {
 }
 
 /**
- * Returns the parenthesized expression length. It is useful 
- * because you don't need to know where the parenthesized 
+ * Returns the parenthesized expression length. It is useful
+ * because you don't need to know where the parenthesized
  * expression ends to know its length.
- * 
+ *
  * The parenthesized expression is something like "(67x(56-26))".
- * 
+ *
  * @param exp - An expression starting with an opening bracket (`(`), like `"(67x(56-26))+56"`
  * @returns - The length of the parenthesized expression.
  */
@@ -338,9 +338,9 @@ const missingSignFlags = {
 
 /**
  * Destructures a binary operation like -5^(-3).
- * 
+ *
  * @param exp The binary operation.
- * @returns - A tuple whose elements represent the first operand, the 
+ * @returns - A tuple whose elements represent the first operand, the
  * operator, the second operand and a sign that may not be taken into
  * account in the calculations, respectively.
  */
@@ -352,11 +352,11 @@ function destructureOperation(exp: string): DestructuredExpression {
   return destructure(exp, operator, missingSignFlags[operator]);
 }
 
-/** 
- * Prepares the expression for calculation. It adds implicit operations, 
- * deals with percentages and removes unnecessary parentheses from the 
- * expression. 
- * 
+/**
+ * Prepares the expression for calculation. It adds implicit operations,
+ * deals with percentages and removes unnecessary parentheses from the
+ * expression.
+ *
  * @param exp The expression.
  */
 function prepareExpression(exp: string) {
@@ -367,7 +367,7 @@ function prepareExpression(exp: string) {
 
 /**
  * Does the math, of course.
- * 
+ *
  * @param exp The expression to solve.
  * @returns - The result of the expression.
  */
@@ -412,7 +412,7 @@ function removeUnnecessaryParens(exp: string) {
 
 /**
  * Adds operations that are implicit in the user's input.
- * 
+ *
  * @param exp The user expression input.
  * @returns The expression but with implicit operations made explicit.
  */
@@ -441,10 +441,10 @@ function replacePercentages(exp: string) {
 /**
  * Solves binary operations, i.e. operations like 5+5 where we have
  * an operator and two operands.
- * 
+ *
  * @param exp A whole expression like 5x8+89-90.
  * @param targetOperationRegExp A regular expression that matches the operation you want to perform.
- * @returns Another expression, but with the specified binary operations solved 
+ * @returns Another expression, but with the specified binary operations solved
  * and their results properly replace them in the previous expression.
  */
 function solveBinaryOperations(exp: string, targetOperationRegExp: RegExp) {
@@ -476,8 +476,8 @@ function solveBinaryOperations(exp: string, targetOperationRegExp: RegExp) {
   return exp;
 }
 
-const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(
+const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length,
+  tooBigNumber = new RegExp(
     String.raw`\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`
     // if there's an 'e' in the expression then we're messing with really big numbers already
   ),
@@ -489,20 +489,27 @@ const tooBigNumber = new RegExp(
   invalidNaNOrInfinity = /NaN|Infinity/,
   singleOperator = /^[-+÷x^%]$/,
   emptyParenthesis = /\(\)/,
-  singleBracket = /^(\(|\))$/,
+  singleBracket = /^(?:\(|\))$/,
   operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/,
   invalidDecimal = /\d*(?:\.\d*){2,}/,
   invalidOperator = /^[÷x^%]/;
 
 interface ErrorCheck {
+  /** A regular expression matching a syntax error in the mathematica expression. */
   test: RegExp;
-
+  /**
+   * A message to alert the user about the error.
+   * The first "*" character is replaced with the match of the error.
+   */
   message: string;
-
+  /** An Error constructor function based on the error the user made. */
   ErrorConstructor: typeof Error;
 }
 
-const errorTests: ErrorCheck[] = [
+/**
+ * An array of objects that are used to check user errors in a mathematical expression.
+ */
+const errorChecks: ErrorCheck[] = [
   {
     test: tooBigNumber,
     message: "Number is too big: '*'",
@@ -570,6 +577,12 @@ const errorTests: ErrorCheck[] = [
   },
 ];
 
+/**
+ * Checks if the all parentheses are opened and closed properly.
+ *
+ * @param exp A mathematical expression.
+ * @returns A boolean value telling whether all parentheses are properly opened and closed.
+ */
 function checkClosedParenthesis(exp: string): boolean {
   let open = 0,
     valid = true;
@@ -592,7 +605,7 @@ function checkClosedParenthesis(exp: string): boolean {
 }
 
 function checkValidity(exp: string) {
-  errorTests.forEach(({ test, message, ErrorConstructor }) => {
+  errorChecks.forEach(({ test, message, ErrorConstructor }) => {
     const match = test.exec(exp);
     if (match) {
       throw new ErrorConstructor(message.replace("*", match[0]));

@@ -295,9 +295,8 @@ function solveBinaryOperations(exp, targetOperationRegExp) {
     }
     return exp;
 }
-const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length;
-const tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /(?:[-+÷x^]{2,}|%{2,}|[-+÷x^]+%+)/, multipleDots = /(?:\.{2,})/, missingOperand = /(?:\d+[-+÷x^])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(?:\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^%]$/, emptyParenthesis = /\(\)/, singleBracket = /^(\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/, invalidDecimal = /\d*(?:\.\d*){2,}/, invalidOperator = /^[÷x^%]/;
-const errorTests = [
+const maxNumberLength = Number.MAX_SAFE_INTEGER.toString().length, tooBigNumber = new RegExp(String.raw `\d{${maxNumberLength + 1},}|[+-]?\d+(\.\d+)?e[+-]\d+`), multipleOperators = /(?:[-+÷x^]{2,}|%{2,}|[-+÷x^]+%+)/, multipleDots = /(?:\.{2,})/, missingOperand = /(?:\d+[-+÷x^])$/, invalidDot = /\D\.\D/, invalidDotAlone = /^(?:\.|\.\D|\D\.)$/, invalidNaNOrInfinity = /NaN|Infinity/, singleOperator = /^[-+÷x^%]$/, emptyParenthesis = /\(\)/, singleBracket = /^(?:\(|\))$/, operatorAndBracket = /[-+÷x^]\)|\([x÷^%]/, invalidDecimal = /\d*(?:\.\d*){2,}/, invalidOperator = /^[÷x^%]/;
+const errorChecks = [
     {
         test: tooBigNumber,
         message: "Number is too big: '*'",
@@ -383,7 +382,7 @@ function checkClosedParenthesis(exp) {
     return valid && open === 0;
 }
 function checkValidity(exp) {
-    errorTests.forEach(({ test, message, ErrorConstructor }) => {
+    errorChecks.forEach(({ test, message, ErrorConstructor }) => {
         const match = test.exec(exp);
         if (match) {
             throw new ErrorConstructor(message.replace("*", match[0]));
