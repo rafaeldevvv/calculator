@@ -286,20 +286,20 @@ function replacePercentages(exp) {
     });
     return exp;
 }
-function solveBinaryOperations(exp, targetOperationRegExp) {
-    while (exp.search(targetOperationRegExp) !== -1) {
-        const match = targetOperationRegExp.exec(exp);
+function solveBinaryOperations(exp, targetExpressionRegExp) {
+    while (exp.search(targetExpressionRegExp) !== -1) {
+        const match = targetExpressionRegExp.exec(exp);
         const expression = match[0], { index } = match;
         const [operand1, operator, operand2, missingSign] = destructureOperation(expression);
         const operatorFunc = binaryOperatorsEvaluators[operator], result = operatorFunc(operand1, operand2);
         if (exp.length === expression.length) {
-            exp = `${missingSign || ""}(${result})`;
+            exp = `${result >= 0 ? missingSign || "" : ""}(${result})`;
             exp = prepareExpression(exp);
             continue;
         }
-        let resultStr = `(${missingSign || ""}${result})`;
+        let resultStr = `(${result >= 0 ? missingSign || "" : ""}${result})`;
         const before = exp.slice(0, index);
-        if (result >= 0 && before !== "" && !/[-+x^÷]$/.test(before))
+        if (before !== "" && !/[-+x^÷]$/.test(before))
             resultStr = "+" + resultStr;
         exp = spliceString(exp, index, expression.length, `${resultStr}`);
         exp = prepareExpression(exp);

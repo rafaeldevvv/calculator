@@ -139,7 +139,7 @@ resultKey.addEventListener("click", showResult);
 
 copyButton.addEventListener("click", () => {
   navigator.clipboard.writeText(expression).then(() => {
-    announcePolitely("copied!")
+    announcePolitely("copied!");
     copyIcon.classList.remove("fa-copy");
     copyIcon.classList.add("fa-check");
     setTimeout(() => {
@@ -461,9 +461,9 @@ function replacePercentages(exp: string) {
  * @returns Another expression, but with the specified binary operations solved
  * and their results properly replace them in the previous expression.
  */
-function solveBinaryOperations(exp: string, targetOperationRegExp: RegExp) {
-  while (exp.search(targetOperationRegExp) !== -1) {
-    const match = targetOperationRegExp.exec(exp)!;
+function solveBinaryOperations(exp: string, targetExpressionRegExp: RegExp) {
+  while (exp.search(targetExpressionRegExp) !== -1) {
+    const match = targetExpressionRegExp.exec(exp)!;
     const expression = match[0],
       { index } = match;
     const [operand1, operator, operand2, missingSign] =
@@ -472,17 +472,21 @@ function solveBinaryOperations(exp: string, targetOperationRegExp: RegExp) {
     const operatorFunc = binaryOperatorsEvaluators[operator as BinaryOperator],
       result = operatorFunc(operand1, operand2);
     if (exp.length === expression.length) {
-      exp = `${missingSign || ""}(${result})`;
+      exp = `${result >= 0 ? missingSign || "" : ""}(${result})`;
       exp = prepareExpression(exp);
 
       continue;
     }
 
-    let resultStr = `(${missingSign || ""}${result})`;
-
+    /* 
+    only include the missing sign if result is greater than 0, because it the result is bigger
+    than 0 and there's a missing sign, then probably the operator doesn't take the sign into account
+    when calculating and thus it should be included here for exactness, e.g. -5^2 results in 25, 
+    because the sign isn't take into account when it is outside parenthesis, but we should include 
+    "-" before 25 so we have -25 which is the correct result. */
+    let resultStr = `(${result >= 0 ? missingSign || "" : ""}${result})`;
     const before = exp.slice(0, index);
-    if (result >= 0 && before !== "" && !/[-+x^÷]$/.test(before))
-      resultStr = "+" + resultStr;
+    if (before !== "" && !/[-+x^÷]$/.test(before)) resultStr = "+" + resultStr;
     exp = spliceString(exp, index, expression.length, `${resultStr}`);
     exp = prepareExpression(exp);
   }
