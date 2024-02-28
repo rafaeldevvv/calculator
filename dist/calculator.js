@@ -151,7 +151,7 @@ function encodeExpression(exp) {
             i += len;
             continue;
         }
-        else if (/[\d.]/.test(ch)) {
+        else if (/[\d.%]/.test(ch)) {
             encodedExp = spliceString(encodedExp, i, 1, "*");
         }
         i++;
@@ -185,7 +185,7 @@ function destructure(exp, targetOperator, includeOperandSignOutsideParens) {
         includeOperandSignOutsideParens ? undefined : missingSign,
     ];
 }
-const number = /(?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))/, onlyNumber = /^(?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))$/, percentage = /(\.\d+|\d+(\.\d*)?)%/g, parenthesizedNumber = /(\((?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))\))/;
+const number = /(?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))/, onlyNumber = /^(?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))$/, parenthesizedNumber = /(\((?:[+-]?(?:(?:\d+(?:\.\d*)?|\.\d+)))\))/;
 const expressionRegexp = /\*+[-+x÷^]\*+/;
 function isExpression(exp) {
     exp = encodeExpression(exp);
@@ -207,8 +207,20 @@ function indexOfAndLengthOfParenthesizedExp(exp) {
     }
     return null;
 }
-function getParenthesizedExpressionLen(exp) {
+function getParenthesizedExpressionLen(exp, backwards = false) {
     let openInside = 0, length = 1;
+    if (backwards) {
+        exp = exp
+            .split("")
+            .reverse()
+            .join("")
+            .replace(/([()])/g, (_, paren) => {
+            return paren === "(" ? ")" : "(";
+        });
+    }
+    if (!exp.startsWith("(")) {
+        throw new SyntaxError("Expression doesn't start with '(', so it's not possible to know the length");
+    }
     for (let i = 1; i < exp.length; i++) {
         const ch = exp[i];
         if (ch === "(") {
@@ -243,7 +255,7 @@ function destructureOperation(exp) {
     return destructure(exp, operator, missingSignFlags[operator]);
 }
 function prepareExpression(exp) {
-    return removeUnnecessaryParens(replacePercentages(addImplicitOperations(exp)));
+    return removeUnnecessaryParens(addImplicitOperations(replacePercentages(exp)));
 }
 function doTheMath(exp) {
     checkValidity(exp);
@@ -265,13 +277,15 @@ function doTheMath(exp) {
         exp = exp.slice(1, exp.length - 1);
     return Number(exp);
 }
-const unnecessarilyParenthesizedPositiveNumber = /\((?:\+?(\d+(?:\.\d*)?|\.\d+))\)/g, unnecessarilyParenthesizedNegativeNumber = /(^|[^-+x^÷])\((?:\-(\d+(?:\.\d*)?|\.\d+))\)($|[^-+x^÷])/g;
+const unnecessarilyParenthesizedPositiveNumber = /\((?:\+?([\d.]+))\)/g, unnecessarilyParenthesizedNegativeNumber = /(^|[^-+x^÷])\((?:\-([\d.]+))\)([^-+x^÷]|$)/g;
 function removeUnnecessaryParens(exp) {
     while (unnecessarilyParenthesizedPositiveNumber.test(exp)) {
         exp = exp.replaceAll(unnecessarilyParenthesizedPositiveNumber, "$1");
     }
     while (unnecessarilyParenthesizedNegativeNumber.test(exp)) {
-        exp = exp.replace(unnecessarilyParenthesizedNegativeNumber, "$1-$2$3");
+        exp = exp.replace(unnecessarilyParenthesizedNegativeNumber, (_, chBefore, number, chAfter) => {
+            return `${chBefore}-${number}${chAfter}`;
+        });
     }
     return exp;
 }
@@ -279,18 +293,61 @@ function addImplicitOperations(exp) {
     exp = exp.replaceAll(")(", ")x(");
     exp = exp.replace(/(\d|\.)\(/g, "$1x(");
     exp = exp.replace(/\)(\d|\.)/g, ")x$1");
-    exp = exp.replace(/%(\(|\d)/g, "%x$1");
-    exp = exp.replace(/(?:[^\)\d.]|^)([-+])\(/g, (_, sign) => {
-        let replacement = `(${sign === "+" ? "" : sign}1)x(`;
+    exp = exp.replace(/%([\d(.])/g, "%x$1");
+    exp = exp.replace(/([^\)\d.]|^)([-+])\(/g, (_, chBefore, sign) => {
+        let replacement = `${chBefore || ""}(${sign === "+" ? "" : sign}1)x(`;
         return replacement;
     });
-    exp = exp.replaceAll(")%", ")÷100");
     return exp;
 }
+function extractNumber(str) {
+    if (str.startsWith("("))
+        return Number(str.slice(1, str.length - 1));
+    else
+        return Number(str);
+}
+const percentageInRoundBrackets = /\(([+-]?[\d.]+)%\)/g, percentageNextToMultiplationOrDivision = /([\d.]+|\([+-]?[\d.]+\))%([x÷^])|([x÷^])([\d.]+|\([+-]?[\d.]+\))%/g, addedPercentage = /([-+])(\([+-]?[\d.]+\)|[\d.]+)%([^x^÷]|$)/, percentageAlone = /^(?:(\([-+]?[\d.]+\)|[+-]?[\d.]+)%)$/g;
 function replacePercentages(exp) {
-    exp = exp.replaceAll(percentage, (_, number) => {
-        return `${number / 100}`;
+    exp = exp.replaceAll(percentageInRoundBrackets, (_, number) => {
+        return `(${Number(number) / 100})`;
     });
+    exp = exp.replaceAll(percentageNextToMultiplationOrDivision, (_, perc1, sign1, sign2, perc2) => {
+        if (perc1) {
+            const n = extractNumber(perc1);
+            return `${Number(n) / 100}${sign1}`;
+        }
+        else {
+            const n = extractNumber(perc2);
+            return `${sign2}${Number(n) / 100}`;
+        }
+    });
+    exp = exp.replaceAll(percentageAlone, (_, number) => {
+        const n = extractNumber(number);
+        return `${n / 100}`;
+    });
+    let lastIndex = 0;
+    while (addedPercentage.test(exp)) {
+        const match = addedPercentage.exec(exp), { index } = match, [whole, plusOrMinus, percentage, chAfter] = match;
+        let open = 0, startIndex = null;
+        for (let i = index - 1; i >= 0; i--) {
+            const ch = exp[i];
+            if (ch === ")")
+                open++;
+            else if ((ch === "(" && open === 0) || i === 0) {
+                startIndex = i;
+                break;
+            }
+            else if (ch === "(")
+                open--;
+        }
+        const contentBeforePercentage = exp.slice(startIndex, index);
+        const perc = extractNumber(percentage);
+        const factor = plusOrMinus === "-" ? 1 - perc / 100 : 1 + perc / 100;
+        lastIndex = index + whole.length;
+        if (contentBeforePercentage === "" || contentBeforePercentage.endsWith("("))
+            break;
+        exp = spliceString(exp, startIndex, contentBeforePercentage.length + whole.length, `(${contentBeforePercentage})x(${factor})${chAfter}`);
+    }
     return exp;
 }
 function solveBinaryOperations(exp, targetExpressionRegExp) {
