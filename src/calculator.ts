@@ -480,7 +480,7 @@ const percentageInRoundBrackets = /\(([+-]?[\d.]+)%\)/g,
   percentageNextToMultiplationOrDivision =
     /([\d.]+|\([+-]?[\d.]+\))%([x÷^])|([x÷^])([\d.]+|\([+-]?[\d.]+\))%/g,
   addedPercentage = /([-+])(\([+-]?[\d.]+\)|[\d.]+)%([^x^÷]|$)/,
-  percentageAlone = /^(?:(\([-+]?[\d.]+\)|[+-]?[\d.]+)%)$/g;
+  percentageAlone = /^(?:(\([-+]?[\d.]+\)|[+-]?[\d.]+)%)/g;
 function replacePercentages(exp: string) {
   exp = exp.replaceAll(percentageInRoundBrackets, (_, number) => {
     return `(${Number(number) / 100})`;
