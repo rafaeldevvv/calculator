@@ -93,10 +93,10 @@
                     <!-- history -->
                     <div class="menu-parent js-menu-parent relative">
                       <button
-                        class="history-btn text-primary fs-300 relative"
+                        class="history-btn text-primary fs-300 relative js-history-popover-toggle"
                         aria-controls="history-menu"
-                        aria-expanded="false"
                         aria-haspopup="menu"
+                        popovertarget="history-section"
                         id="history-btn"
                       >
                         <i
@@ -106,16 +106,16 @@
                         <span class="visually-hidden">history</span>
                       </button>
                       <section
-                        class="history-menu-container absolute rounded js-menu-clickable-area"
+                        class="history-popover absolute rounded js-menu-clickable-area js-history-popover text-primary"
                         aria-labelledby="history-heading"
                         id="history-section"
+                        popover
                       >
                         <h2 class="mb-1" id="history-heading">History</h2>
                         <p class="mb-2" id="history-description">
                           Your previous calculations will appear here.
                         </p>
                         <ul
-                          role="menu"
                           id="history-menu"
                           aria-labelledby="history-heading"
                           aria-describedby="history-description"

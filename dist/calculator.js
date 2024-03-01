@@ -1,10 +1,11 @@
 import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
-import managePopupMenu from "./popup-menu-manager.js";
+import manageHistoryPopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
 import { renderHistoryEntries, prepareExpressionForPresentation, } from "./rendering.js";
 import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
-managePopupMenu(document.querySelector(".js-menu-parent"));
+const historyToggle = document.querySelector(".js-history-popover-toggle"), historyPopover = document.getElementById(historyToggle.getAttribute("popovertarget"));
+manageHistoryPopupMenu(historyToggle);
 let expression = "", previousExpressions = [expression];
 function announceExpression() {
     if (expression) {
@@ -41,6 +42,7 @@ function handleEntryClick(id) {
     const entry = storage.get("history").find((e) => e.id === id);
     updateExpression(entry.expression);
     updateExpressionDOM(expression, true);
+    historyPopover.hidePopover();
 }
 function registerHistoryEntriesListeners() {
     const entries = historyMenu.querySelectorAll("[role=menuitem]");
