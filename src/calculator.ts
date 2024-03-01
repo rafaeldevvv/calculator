@@ -1,6 +1,6 @@
 import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
-import managePopupMenu from "./popup-menu-manager.js";
+import manageHistoryPopupMenu from "./popup-menu-manager.js";
 import * as storage from "./storage.js";
 import {
   renderHistoryEntries,
@@ -8,7 +8,14 @@ import {
 } from "./rendering.js";
 import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
 
-managePopupMenu(document.querySelector(".js-menu-parent") as HTMLElement);
+const historyToggle = document.querySelector(
+    ".js-history-popover-toggle"
+  ) as HTMLElement,
+  historyPopover = document.getElementById(
+    historyToggle.getAttribute("popovertarget") as string
+  ) as HTMLElement;
+
+manageHistoryPopupMenu(historyToggle);
 
 let expression = "",
   previousExpressions = [expression];
@@ -78,6 +85,7 @@ function handleEntryClick(id: number) {
 
   updateExpression(entry.expression);
   updateExpressionDOM(expression, true);
+  historyPopover.hidePopover();
 }
 
 function registerHistoryEntriesListeners() {
@@ -524,7 +532,8 @@ function replacePercentages(exp: string) {
     const perc = extractNumber(percentage);
     const factor = plusOrMinus === "-" ? 1 - perc / 100 : 1 + perc / 100;
     lastIndex = index + whole.length;
-    if (contentBeforePercentage === "" || contentBeforePercentage.endsWith("(")) break;
+    if (contentBeforePercentage === "" || contentBeforePercentage.endsWith("("))
+      break;
     exp = spliceString(
       exp,
       startIndex as number,
