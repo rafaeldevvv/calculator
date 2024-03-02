@@ -558,19 +558,20 @@ ul {
 }
 
 .history-btn,
-.copy-button {
+.copy-btn {
    opacity: .7;
+   outline-offset: .5rem;
 }
 
 .history-btn:hover,
 .history-btn:focus-visible,
-.copy-button:hover,
+.copy-btn:hover,
 .copy-btn:focus-visible {
    opacity: 1;
 }
 
 .history-btn:active,
-.copy-button:active {
+.copy-btn:active {
    transform: scale(.8);
 }
 
