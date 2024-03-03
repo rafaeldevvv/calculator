@@ -40,8 +40,10 @@ export default function alertUser(
   }, duration - animationDuration);
 }
 
+let dismissing = false;
+
 export function dismiss() {
-  if (!showingAlert) return;
+  if (!showingAlert || dismissing) return;
 
   const animationOptions = {
     duration: animationDuration as number,
@@ -54,10 +56,12 @@ export function dismiss() {
   clearTimeout(currentTimeout);
   currentTimeout = undefined;
 
+  dismissing = true;
   fadeOutUp(customAlert, animationOptions, () => {
     customAlert.remove();
     showingAlert = false;
-    animationDuration = undefined;  
+    dismissing = false;
+    animationDuration = undefined;
   });
 }
 

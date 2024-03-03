@@ -25,8 +25,9 @@ export default function alertUser(announcement, options) {
         currentTimeout = undefined;
     }, duration - animationDuration);
 }
+let dismissing = false;
 export function dismiss() {
-    if (!showingAlert)
+    if (!showingAlert || dismissing)
         return;
     const animationOptions = {
         duration: animationDuration,
@@ -36,9 +37,11 @@ export function dismiss() {
     const customAlert = document.querySelector("[role='alert']");
     clearTimeout(currentTimeout);
     currentTimeout = undefined;
+    dismissing = true;
     fadeOutUp(customAlert, animationOptions, () => {
         customAlert.remove();
         showingAlert = false;
+        dismissing = false;
         animationDuration = undefined;
     });
 }
