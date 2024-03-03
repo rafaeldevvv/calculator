@@ -4,6 +4,7 @@ import { formatNumbers } from "./utils.js";
 import {
   prepareExpressionForPresentation,
   renderHistoryEntries,
+  renderHistoryList,
 } from "./rendering.js";
 import * as storage from "./storage.js";
 import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
@@ -46,10 +47,12 @@ const calculator = document.querySelector(".js-calculator") as HTMLElement,
   expressionContent = calculator.querySelector(
     ".js-expression__content"
   ) as HTMLElement,
-  historyList = document.querySelector("#history-menu") as HTMLUListElement,
+  historySection = document.querySelector("#history-section")!,
   historyDescription = document.querySelector(
     "#history-description"
   ) as HTMLParagraphElement;
+
+let historyList = document.querySelector("#history-menu");
 
 function animateExpression() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -96,7 +99,9 @@ function handleDeleteEntry(id: number) {
 }
 
 function registerHistoryEntriesListeners() {
-  const entries = Array.from(historyList.querySelectorAll(".js-history-entry"));
+  const entries = Array.from(
+    historyList!.querySelectorAll(".js-history-entry")
+  );
 
   entries.forEach((e) => {
     const entryRes = e.querySelector(".js-entry-res")!,
@@ -120,13 +125,29 @@ function registerHistoryEntriesListeners() {
   });
 }
 
+let shownEntries = 10;
+
 function updateHistory() {
   const history = storage.get("history");
   if (history.length !== 0) {
-    const historyContent = renderHistoryEntries(history);
-    historyList.innerHTML = historyContent;
-    historyDescription.textContent = "Click to select an expression.";
+    historyDescription.textContent = "Select an expression or result.";
+    if (historyList === null) {
+      const historyListHTML = renderHistoryList(history);
+
+      historySection.insertAdjacentHTML("beforeend", historyListHTML);
+      historyList = document.querySelector("#history-menu");
+    } else {
+      const historyEntries = renderHistoryEntries(
+        history.slice(0, shownEntries)
+      );
+      historyList.innerHTML = historyEntries;
+    }
     registerHistoryEntriesListeners();
+  } else if (historyList) {
+    historyDescription.textContent =
+      "Your previous calculations will appear here.";
+    historyList.remove();
+    historyList = null;
   }
 }
 
