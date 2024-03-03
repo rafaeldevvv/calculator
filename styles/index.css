@@ -39,6 +39,11 @@
    --fs-500: 2.5rem;
 
    --ff-sans: "League Spartan", sans-serif;
+
+   --scrollbar-fg: hsl(var(--c-text-primary));
+   --scrollbar-bg: hsl(var(--c-tertiary));
+
+   scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
 }
 
 .theme-blue {
@@ -152,7 +157,7 @@ body {
    color: hsl(var(--c-text-primary));
 
    display: flex;
-   place-items: center;
+   align-items: center;
 }
 
 main {
@@ -515,8 +520,6 @@ ul {
 }
 
 .expression-container {
-   --scrollbar-fg: hsl(var(--c-text-primary));
-   --scrollbar-bg: hsl(var(--c-tertiary));
 
    height: 5rem;
    background-color: hsl(var(--c-tertiary));
@@ -525,7 +528,6 @@ ul {
    padding-inline: 3.5rem 1rem;
    border-radius: .6rem .6rem 0 0;
 
-   scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
 }
 
 .operator {
@@ -586,23 +588,7 @@ ul {
    overflow-y: scroll;
    z-index: 9999;
 
-   --scrollbar-fg: hsl(var(--c-text-primary) / .4);
-   --scrollbar-bg: transparent;
-
-   scrollbar-color: var(--scrollbar-fg) var(--scrollbar-bg);
-}
-
-.history-popover::-webkit-scrollbar {
-   width: .6rem;
-}
-
-.history-popover::-webkit-scrollbar-track {
-   background-color: var(--scrollbar-bg);
-}
-
-.history-popover::-webkit-scrollbar-thumb {
-   background-color: var(--scrollbar-fg);
-   border-radius: .6rem;
+   scrollbar-color: var(--scrollbar-fg) transparent;
 }
 
 .history-entry {

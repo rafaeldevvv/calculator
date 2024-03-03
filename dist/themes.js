@@ -5,15 +5,15 @@ const themes = [
     "theme-purple",
     "theme-default",
 ];
-const body = document.body;
+const html = document.documentElement;
 function removeTheme() {
     themes.forEach((t) => {
-        body.classList.remove(t);
+        html.classList.remove(t);
     });
 }
 function setTheme(t) {
     removeTheme();
-    body.classList.add(t);
+    html.classList.add(t);
     storage.save("theme", t);
 }
 let initialTheme = storage.get("theme");
