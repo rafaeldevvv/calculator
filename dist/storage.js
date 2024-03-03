@@ -23,6 +23,10 @@ export function addHistoryEntry(entry) {
     const newHistory = [newEntry, ...calculatorData.history];
     save("history", newHistory);
 }
+export function delHistoryEntry(id) {
+    const newHistory = calculatorData.history.filter((e) => e.id !== id);
+    save("history", newHistory);
+}
 export function get(prop) {
     return calculatorData[prop];
 }

@@ -1,187 +1,4 @@
-import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
-import { announcePolitely } from "./visually-hidden-announcer.js";
-import manageHistoryPopupMenu from "./popup-menu-manager.js";
-import * as storage from "./storage.js";
-import {
-  renderHistoryEntries,
-  prepareExpressionForPresentation,
-} from "./rendering.js";
-import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
-
-const historyToggle = document.querySelector(
-    ".js-history-popover-toggle"
-  ) as HTMLElement,
-  historyPopover = document.getElementById(
-    historyToggle.getAttribute("popovertarget") as string
-  ) as HTMLElement;
-
-manageHistoryPopupMenu(historyToggle);
-
-let expression = "",
-  previousExpressions = [expression];
-
-function announceExpression() {
-  if (expression) {
-    announcePolitely(`Current expression is ${expression}`);
-  } else {
-    announcePolitely("Expression is empty");
-  }
-}
-
-const calculator = document.querySelector(".js-calculator") as HTMLElement,
-  /* 
-    all nodes that have a data-symbol attribute 
-    are used to add a symbol to the expression 
-  */
-  symbolKeys = calculator.querySelectorAll("[data-symbol]"),
-  resetKey = calculator.querySelector(".js-reset-key") as HTMLButtonElement,
-  delKey = calculator.querySelector(".js-del-key") as HTMLButtonElement,
-  resultKey = calculator.querySelector(".js-result-key") as HTMLButtonElement,
-  copyButton = calculator.querySelector(".js-copy-button") as HTMLButtonElement,
-  copyIcon = copyButton.querySelector(".js-icon") as HTMLElement,
-  expressionContainer = calculator.querySelector(
-    ".js-expression-container"
-  ) as HTMLElement,
-  expressionContent = calculator.querySelector(
-    ".js-expression__content"
-  ) as HTMLElement,
-  historyMenu = document.querySelector("#history-menu") as HTMLUListElement,
-  historyDescription = document.querySelector(
-    "#history-description"
-  ) as HTMLParagraphElement;
-
-function animateExpression() {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-  expressionContent.animate(
-    [
-      { opacity: 0, transform: "translateY(300%)" },
-      { opacity: 1, transform: "translateY(0%)" },
-    ],
-    { duration: 500, fill: "forwards" }
-  );
-}
-
-function updateExpressionDOM(exp: string, isResult = false) {
-  let contents = formatNumbers(exp);
-  expressionContent.innerHTML = prepareExpressionForPresentation(contents);
-  expressionContainer.scrollLeft = expressionContainer.scrollWidth;
-
-  if (isResult) {
-    animateExpression();
-  }
-}
-
-function updateExpression(newExp: string) {
-  previousExpressions.push(expression);
-  expression = newExp;
-  announceExpression();
-}
-
-const listenedHistoryIds: number[] = [];
-
-function handleEntryClick(id: number) {
-  const entry = storage.get("history").find((e) => e.id === id)!;
-
-  updateExpression(entry.expression);
-  updateExpressionDOM(expression, true);
-  historyPopover.hidePopover();
-}
-
-function registerHistoryEntriesListeners() {
-  const entries = historyMenu.querySelectorAll("[role=menuitem]");
-  entries.forEach((e) => {
-    const id = Number(e.getAttribute("data-entry-id"));
-    if (!listenedHistoryIds.includes(id)) {
-      e.addEventListener("click", () => {
-        handleEntryClick(id);
-      });
-    }
-  });
-}
-
-function updateHistory() {
-  const history = storage.get("history");
-  if (history.length !== 0) {
-    const historyContent = renderHistoryEntries(history);
-    historyMenu.innerHTML = historyContent;
-    historyDescription.textContent = "Click to select an expression.";
-    registerHistoryEntriesListeners();
-  }
-}
-
-updateHistory();
-
-function deleteLastSymbol() {
-  updateExpression(expression.slice(0, expression.length - 1));
-  updateExpressionDOM(expression);
-}
-
-symbolKeys.forEach((k) => {
-  const symbol = k.getAttribute("data-symbol");
-  k.addEventListener("click", () => {
-    if (expression.includes("NaN") || expression.includes("Infinity")) {
-      expression = "";
-    }
-    updateExpression(expression + symbol);
-    updateExpressionDOM(expression);
-    dismissAlert();
-  });
-});
-
-resetKey.addEventListener("click", () => {
-  updateExpression("");
-  updateExpressionDOM(expression);
-  dismissAlert();
-});
-
-delKey.addEventListener("click", () => {
-  deleteLastSymbol();
-  dismissAlert();
-});
-
-window.addEventListener("keydown", (e) => {
-  if (e.ctrlKey) {
-    if (e.key == "z") {
-      expression = previousExpressions.pop() || "";
-      updateExpressionDOM(expression);
-    }
-  } else if (e.key === "Backspace") {
-    deleteLastSymbol();
-    dismissAlert();
-  }
-});
-
-resultKey.addEventListener("click", showResult);
-
-copyButton.addEventListener("click", () => {
-  navigator.clipboard.writeText(expression).then(() => {
-    announcePolitely("copied!");
-    copyIcon.classList.remove("fa-copy");
-    copyIcon.classList.add("fa-check");
-    setTimeout(() => {
-      copyIcon.classList.remove("fa-check");
-      copyIcon.classList.add("fa-copy");
-    }, 1500);
-  });
-});
-
-function showResult() {
-  if (expression.length === 0) return;
-  try {
-    const result = doTheMath(expression);
-
-    storage.addHistoryEntry({ expression, result });
-
-    updateExpression(result.toString());
-    updateHistory();
-    updateExpressionDOM(expression, true);
-    announcePolitely(`The result is ${result}`);
-  } catch (err) {
-    alertUser(err as any);
-    console.error(err);
-  }
-}
+import { spliceString, splitAtIndex } from "./utils.js";
 
 const binaryOperators = ["+", "-", "x", "÷", "^"] as const;
 type BinaryOperator = (typeof binaryOperators)[number];
@@ -408,37 +225,6 @@ function prepareExpression(exp: string) {
   return removeUnnecessaryParens(
     addImplicitOperations(replacePercentages(exp))
   );
-}
-
-/**
- * Does the math, of course.
- *
- * @param exp The expression to solve.
- * @returns - The result of the expression.
- */
-function doTheMath(exp: string) {
-  checkValidity(exp);
-
-  if (onlyNumber.test(exp)) return Number(exp);
-
-  exp = prepareExpression(exp);
-
-  let parenMatch: SimpleMatch | null;
-  while ((parenMatch = indexOfAndLengthOfParenthesizedExp(exp))) {
-    const { index, length } = parenMatch;
-    const subexp = exp.slice(index + 1, index + length - 1);
-    const result = doTheMath(subexp);
-
-    exp = spliceString(exp, index, length, `(${result})`);
-    exp = prepareExpression(exp);
-  }
-
-  if (onlyNumber.test(exp)) return Number(exp);
-
-  exp = precedenceRules.reduce(solveBinaryOperations, exp);
-
-  if (exp.startsWith("(")) exp = exp.slice(1, exp.length - 1);
-  return Number(exp);
 }
 
 const unnecessarilyParenthesizedPositiveNumber = /\((?:\+?([\d.]+))\)/g,
@@ -729,4 +515,35 @@ function checkValidity(exp: string) {
       "You forgot to close or open some parenthesis properly"
     );
   }
+}
+
+/**
+ * Does the math, of course.
+ *
+ * @param exp The expression to solve.
+ * @returns - The result of the expression.
+ */
+export default function doTheMath(exp: string) {
+  checkValidity(exp);
+
+  if (onlyNumber.test(exp)) return Number(exp);
+
+  exp = prepareExpression(exp);
+
+  let parenMatch: SimpleMatch | null;
+  while ((parenMatch = indexOfAndLengthOfParenthesizedExp(exp))) {
+    const { index, length } = parenMatch;
+    const subexp = exp.slice(index + 1, index + length - 1);
+    const result = doTheMath(subexp);
+
+    exp = spliceString(exp, index, length, `(${result})`);
+    exp = prepareExpression(exp);
+  }
+
+  if (onlyNumber.test(exp)) return Number(exp);
+
+  exp = precedenceRules.reduce(solveBinaryOperations, exp);
+
+  if (exp.startsWith("(")) exp = exp.slice(1, exp.length - 1);
+  return Number(exp);
 }

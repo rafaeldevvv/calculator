@@ -1,36 +1,42 @@
 import type { HistoryEntry } from "./types";
 import { formatNumbers } from "./utils.js";
 
-export function renderHistoryEntry(entry: HistoryEntry) {
+export function renderHistoryListItem(entry: HistoryEntry) {
   const { id, expression, result } = entry;
   return `
-      <button
-         type="button"
-         role="menuitem"
-         class="history-entry text-primary block text-left px-2 rounded capitalize"
-         data-close-on-click
-         data-entry-id="${id}"
-      >
-         <span class="history-entry__expression block">
-         <strong>expression</strong>: ${prepareExpressionForPresentation(
-           formatNumbers(expression)
-         )}
-         </span>
-         <span class="history-entry__result block mt-1">
-         <strong>result</strong>: ${
-           typeof result === "string" ? result : result.toLocaleString()
-         }
-         </span>
-      </button>
-   `;
+    <li class="history-entry rounded text-primary px-2 p-0.5 bg-secondary js-history-entry" data-entry-id="${id}">
+      <button class="js-entry-exp history-entry__expression hover:bg-darker block text-left capitalize p-1 rounded">exp: ${prepareExpressionForPresentation(
+        formatNumbers(expression)
+      )}</button>
+      <div class="flex">
+        <button class="js-entry-res history-entry__result hover:bg-darker block text-left capitalize p-1 rounded">res: ${formatNumbers(
+          result.toString()
+        )}</button>
+        <button 
+          title="Delete entry"
+          aria-label="Delete entry"
+          class="js-entry-del text-primary fs-300 js-remove-entry-btn hover:bg-darker p-1 rounded text-right uppercase"
+        >
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+    </li>
+  `;
 }
 
-export function renderHistoryMenuListItem(entry: HistoryEntry) {
-  return `<li role="none">${renderHistoryEntry(entry)}</li>`;
+export function renderHistoryList(entries: HistoryEntry[]) {
+  return `
+    <ul
+      id="history-menu"
+      aria-labelledby="history-heading"
+      aria-describedby="history-description"
+      class="history-list flow"
+    >${renderHistoryEntries(entries)}</ul>
+  `;
 }
 
 export function renderHistoryEntries(entries: HistoryEntry[]) {
-  return entries.map(renderHistoryMenuListItem).join("");
+  return entries.map(renderHistoryListItem).join("");
 }
 
 export function prepareExpressionForPresentation(exp: string) {

@@ -31,6 +31,8 @@
 
    --c-text-primary: ;
    --c-text-secondary: ;
+   --c-text-tertiary: ;
+   --c-text-quaternary: 6 50% 80%;
 
    --fs-100: .7rem;
    --fs-200: 1rem;
@@ -179,6 +181,7 @@ button,
 textarea,
 select {
    font: inherit;
+   color: inherit;
 }
 
 button {
@@ -264,6 +267,10 @@ ul {
 
 .text-tertiary {
    color: hsl(var(--c-text-tertiary));
+}
+
+.text-quaternary {
+   color: hsl(var(--c-text-quaternary));
 }
 
 .text-white {
@@ -396,6 +403,22 @@ ul {
 
 .px-2 {
    padding-inline: 1rem;
+}
+
+.p-0\.5 {
+   padding: .25rem;
+}
+
+.p-1 {
+   padding: .5rem;
+}
+
+.p-2 {
+   padding: 1rem;
+}
+
+.p-3 {
+   padding: 1.5rem;
 }
 
 .text-right {
@@ -615,14 +638,7 @@ ul {
 }
 
 .history-entry {
-   width: 100%;
    border: 1px solid hsl(var(--c-text-primary) / .3);
-   padding-block: .8rem;
-   background-color: hsl(var(--c-secondary));
-
-   transition-property: color, background-color;
-   transition-duration: 300ms;
-   transition-timing-function: ease;
 }
 
 .history-entry__expression,
@@ -633,12 +649,10 @@ ul {
    overflow: hidden;
 }
 
-.history-entry:hover,
-.history-entry:focus-visible {
-   background-color: hsl(var(--c-text-primary));
-   color: hsl(var(--c-primary));
-   --c-sign: hsl(var(--c-primary));
-   --c-paren: hsl(var(--c-primary));
+.hover\:bg-darker:hover,
+.hover\:bg-darker:focus-visible {
+   background-color: hsl(0 0% 0% / .3);
+   outline: 1px solid hsl(var(--c-text-primary));
 }
 
 /* ====================== radio buttons ============================= */

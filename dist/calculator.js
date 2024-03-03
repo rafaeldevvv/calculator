@@ -1,134 +1,4 @@
-import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
-import { announcePolitely } from "./visually-hidden-announcer.js";
-import manageHistoryPopupMenu from "./popup-menu-manager.js";
-import * as storage from "./storage.js";
-import { renderHistoryEntries, prepareExpressionForPresentation, } from "./rendering.js";
-import { spliceString, splitAtIndex, formatNumbers } from "./utils.js";
-const historyToggle = document.querySelector(".js-history-popover-toggle"), historyPopover = document.getElementById(historyToggle.getAttribute("popovertarget"));
-manageHistoryPopupMenu(historyToggle);
-let expression = "", previousExpressions = [expression];
-function announceExpression() {
-    if (expression) {
-        announcePolitely(`Current expression is ${expression}`);
-    }
-    else {
-        announcePolitely("Expression is empty");
-    }
-}
-const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), copyButton = calculator.querySelector(".js-copy-button"), copyIcon = copyButton.querySelector(".js-icon"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content"), historyMenu = document.querySelector("#history-menu"), historyDescription = document.querySelector("#history-description");
-function animateExpression() {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches)
-        return;
-    expressionContent.animate([
-        { opacity: 0, transform: "translateY(300%)" },
-        { opacity: 1, transform: "translateY(0%)" },
-    ], { duration: 500, fill: "forwards" });
-}
-function updateExpressionDOM(exp, isResult = false) {
-    let contents = formatNumbers(exp);
-    expressionContent.innerHTML = prepareExpressionForPresentation(contents);
-    expressionContainer.scrollLeft = expressionContainer.scrollWidth;
-    if (isResult) {
-        animateExpression();
-    }
-}
-function updateExpression(newExp) {
-    previousExpressions.push(expression);
-    expression = newExp;
-    announceExpression();
-}
-const listenedHistoryIds = [];
-function handleEntryClick(id) {
-    const entry = storage.get("history").find((e) => e.id === id);
-    updateExpression(entry.expression);
-    updateExpressionDOM(expression, true);
-    historyPopover.hidePopover();
-}
-function registerHistoryEntriesListeners() {
-    const entries = historyMenu.querySelectorAll("[role=menuitem]");
-    entries.forEach((e) => {
-        const id = Number(e.getAttribute("data-entry-id"));
-        if (!listenedHistoryIds.includes(id)) {
-            e.addEventListener("click", () => {
-                handleEntryClick(id);
-            });
-        }
-    });
-}
-function updateHistory() {
-    const history = storage.get("history");
-    if (history.length !== 0) {
-        const historyContent = renderHistoryEntries(history);
-        historyMenu.innerHTML = historyContent;
-        historyDescription.textContent = "Click to select an expression.";
-        registerHistoryEntriesListeners();
-    }
-}
-updateHistory();
-function deleteLastSymbol() {
-    updateExpression(expression.slice(0, expression.length - 1));
-    updateExpressionDOM(expression);
-}
-symbolKeys.forEach((k) => {
-    const symbol = k.getAttribute("data-symbol");
-    k.addEventListener("click", () => {
-        if (expression.includes("NaN") || expression.includes("Infinity")) {
-            expression = "";
-        }
-        updateExpression(expression + symbol);
-        updateExpressionDOM(expression);
-        dismissAlert();
-    });
-});
-resetKey.addEventListener("click", () => {
-    updateExpression("");
-    updateExpressionDOM(expression);
-    dismissAlert();
-});
-delKey.addEventListener("click", () => {
-    deleteLastSymbol();
-    dismissAlert();
-});
-window.addEventListener("keydown", (e) => {
-    if (e.ctrlKey) {
-        if (e.key == "z") {
-            expression = previousExpressions.pop() || "";
-            updateExpressionDOM(expression);
-        }
-    }
-    else if (e.key === "Backspace") {
-        deleteLastSymbol();
-        dismissAlert();
-    }
-});
-resultKey.addEventListener("click", showResult);
-copyButton.addEventListener("click", () => {
-    navigator.clipboard.writeText(expression).then(() => {
-        announcePolitely("copied!");
-        copyIcon.classList.remove("fa-copy");
-        copyIcon.classList.add("fa-check");
-        setTimeout(() => {
-            copyIcon.classList.remove("fa-check");
-            copyIcon.classList.add("fa-copy");
-        }, 1500);
-    });
-});
-function showResult() {
-    if (expression.length === 0)
-        return;
-    try {
-        const result = doTheMath(expression);
-        storage.addHistoryEntry({ expression, result });
-        updateExpression(result.toString());
-        updateHistory();
-        updateExpressionDOM(expression, true);
-        announcePolitely(`The result is ${result}`);
-    }
-    catch (err) {
-        alertUser(err);
-        console.error(err);
-    }
-}
+import { spliceString, splitAtIndex } from "./utils.js";
 const binaryOperators = ["+", "-", "x", "÷", "^"];
 const binaryOperatorsEvaluators = {
     x: (a, b) => a * b,
@@ -258,26 +128,6 @@ function destructureOperation(exp) {
 }
 function prepareExpression(exp) {
     return removeUnnecessaryParens(addImplicitOperations(replacePercentages(exp)));
-}
-function doTheMath(exp) {
-    checkValidity(exp);
-    if (onlyNumber.test(exp))
-        return Number(exp);
-    exp = prepareExpression(exp);
-    let parenMatch;
-    while ((parenMatch = indexOfAndLengthOfParenthesizedExp(exp))) {
-        const { index, length } = parenMatch;
-        const subexp = exp.slice(index + 1, index + length - 1);
-        const result = doTheMath(subexp);
-        exp = spliceString(exp, index, length, `(${result})`);
-        exp = prepareExpression(exp);
-    }
-    if (onlyNumber.test(exp))
-        return Number(exp);
-    exp = precedenceRules.reduce(solveBinaryOperations, exp);
-    if (exp.startsWith("("))
-        exp = exp.slice(1, exp.length - 1);
-    return Number(exp);
 }
 const unnecessarilyParenthesizedPositiveNumber = /\((?:\+?([\d.]+))\)/g, unnecessarilyParenthesizedNegativeNumber = /(^|[^-+x^÷])\((?:\-([\d.]+))\)([^-+x^÷]|$)/g;
 function removeUnnecessaryParens(exp) {
@@ -469,4 +319,24 @@ function checkValidity(exp) {
     if (!correctlyParenthesized) {
         throw new SyntaxError("You forgot to close or open some parenthesis properly");
     }
+}
+export default function doTheMath(exp) {
+    checkValidity(exp);
+    if (onlyNumber.test(exp))
+        return Number(exp);
+    exp = prepareExpression(exp);
+    let parenMatch;
+    while ((parenMatch = indexOfAndLengthOfParenthesizedExp(exp))) {
+        const { index, length } = parenMatch;
+        const subexp = exp.slice(index + 1, index + length - 1);
+        const result = doTheMath(subexp);
+        exp = spliceString(exp, index, length, `(${result})`);
+        exp = prepareExpression(exp);
+    }
+    if (onlyNumber.test(exp))
+        return Number(exp);
+    exp = precedenceRules.reduce(solveBinaryOperations, exp);
+    if (exp.startsWith("("))
+        exp = exp.slice(1, exp.length - 1);
+    return Number(exp);
 }

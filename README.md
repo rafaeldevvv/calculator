@@ -47,6 +47,10 @@ I thought that because I have already made more complex projects, a calculator w
 
 It was a fun project. I could have finished it quicker, but I spent some time reading some interesting articles about some javascript concepts.
 
+## Good resources
+
+- [Using the popover API](https://developer.mozilla.org/en-US/docs/Web/API/Popover_API/Using#animating_popovers) - Nice API!
+
 ## Author
 
 The name's Rafael Maia. You can find me on [Instagram](https://www.instagram.com/rafaeldevvv), [X](https://www.twitter.com/rafaeldevvv), and [Linkedin](https://www.linkedin.com/in/rafael-maia-b69662263). Or you can send me an email [rafaeldeveloperr@gmail.com](mailto:rafaeldeveloperr@gmail.com).

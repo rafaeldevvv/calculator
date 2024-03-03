@@ -36,6 +36,11 @@ export function addHistoryEntry(entry: BareHistoryEntry) {
   save("history", newHistory);
 }
 
+export function delHistoryEntry(id: number) {
+  const newHistory = calculatorData.history.filter((e) => e.id !== id);
+  save("history", newHistory);
+}
+
 export function get<Key extends keyof CalculatorData>(
   prop: Key
 ): CalculatorData[Key] {
