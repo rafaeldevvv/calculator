@@ -41,6 +41,10 @@ export function delHistoryEntry(id: number) {
   save("history", newHistory);
 }
 
+export function clearHistory() {
+  save("history", []);
+}
+
 export function get<Key extends keyof CalculatorData>(
   prop: Key
 ): CalculatorData[Key] {

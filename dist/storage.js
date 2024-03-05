@@ -27,6 +27,9 @@ export function delHistoryEntry(id) {
     const newHistory = calculatorData.history.filter((e) => e.id !== id);
     save("history", newHistory);
 }
+export function clearHistory() {
+    save("history", []);
+}
 export function get(prop) {
     return calculatorData[prop];
 }

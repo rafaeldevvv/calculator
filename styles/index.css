@@ -333,7 +333,15 @@ ul {
    row-gap: .25rem;
 }
 
+.gap-x-0\.5 {
+   column-gap: .25rem;
+}
+
 .gap-x-1 {
+   column-gap: .5rem;
+}
+
+.gap-x-2 {
    column-gap: 1rem;
 }
 
@@ -504,6 +512,15 @@ ul {
    margin-top: var(--flow-space, 1rem);
 }
 
+.aspect-square {
+   aspect-ratio: 1;
+}
+
+.disabled\:translucent:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+}
+
 /* ===================== components ======================== */
 
 .key {
@@ -653,6 +670,21 @@ ul {
 .hover\:bg-darker:focus-visible {
    background-color: hsl(0 0% 0% / .3);
    outline: 1px solid hsl(var(--c-text-primary));
+}
+
+.history-ctrl {
+   border: 1px solid hsl(var(--c-text-primary));
+}
+
+.history-ctrl:hover:not(:disabled),
+.history-ctrl:focus-visible {
+   background-color: hsl(var(--c-text-primary));
+   color: hsl(var(--c-primary));
+}
+
+.history-ctrl:focus-visible {
+   outline-color: 2px solid hsl(var(--c-text-primary));
+   outline-offset: .1rem;
 }
 
 /* ====================== radio buttons ============================= */

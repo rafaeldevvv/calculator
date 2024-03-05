@@ -1,7 +1,7 @@
 import manageHistoryPopupMenu from "./popup-menu-manager.js";
 import { announcePolitely } from "./visually-hidden-announcer.js";
 import { formatNumbers } from "./utils.js";
-import { prepareExpressionForPresentation, renderHistoryEntries, renderHistoryList, } from "./rendering.js";
+import { prepareExpressionForPresentation, renderHistoryControls, renderHistoryCount, renderHistoryEntries, renderHistoryList, } from "./rendering.js";
 import * as storage from "./storage.js";
 import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
 import doTheMath from "./calculator.js";
@@ -17,7 +17,7 @@ function announceExpression() {
     }
 }
 const calculator = document.querySelector(".js-calculator"), symbolKeys = calculator.querySelectorAll("[data-symbol]"), resetKey = calculator.querySelector(".js-reset-key"), delKey = calculator.querySelector(".js-del-key"), resultKey = calculator.querySelector(".js-result-key"), copyButton = calculator.querySelector(".js-copy-button"), copyIcon = copyButton.querySelector(".js-icon"), expressionContainer = calculator.querySelector(".js-expression-container"), expressionContent = calculator.querySelector(".js-expression__content"), historySection = document.querySelector("#history-section"), historyDescription = document.querySelector("#history-description");
-let historyList = document.querySelector("#history-menu");
+let historyList = document.querySelector("#history-menu"), historyCtrls;
 function animateExpression() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches)
         return;
@@ -46,9 +46,18 @@ function handleSelectClick(id, target) {
     updateExpressionDOM(newExp, true);
     historyPopover.hidePopover();
 }
+let shownEntries = 5;
 function handleDeleteEntry(id) {
     storage.delHistoryEntry(id);
+    const history = storage.get("history");
+    shownEntries =
+        shownEntries > history.length
+            ? history.length < 5
+                ? 5
+                : history.length
+            : shownEntries;
     updateHistory();
+    announcePolitely("Entry was deleted");
 }
 function registerHistoryEntriesListeners() {
     const entries = Array.from(historyList.querySelectorAll(".js-history-entry"));
@@ -65,26 +74,58 @@ function registerHistoryEntriesListeners() {
         });
     });
 }
-let shownEntries = 10;
-function updateHistory() {
+function registerHistoryCtrlsListeners() {
+    const clearBtn = document.querySelector(".js-clear-btn"), seeMoreBtn = document.querySelector(".js-see-more-btn"), seeLessBtn = document.querySelector(".js-see-less-btn");
+    clearBtn.addEventListener("click", () => {
+        storage.clearHistory();
+        updateHistory();
+    });
+    seeMoreBtn.addEventListener("click", () => {
+        const history = storage.get("history");
+        const nextShownEntries = shownEntries + 5;
+        shownEntries = Math.min(history.length, nextShownEntries);
+        updateHistory();
+    });
+    seeLessBtn.addEventListener("click", () => {
+        const nextShownEntries = shownEntries - 5;
+        shownEntries = Math.max(nextShownEntries, 5);
+        updateHistory();
+    });
+}
+function updateHistoryCtrlsDisabledState() {
     const history = storage.get("history");
-    if (history.length !== 0) {
+    const seeMoreBtn = document.querySelector(".js-see-more-btn"), seeLessBtn = document.querySelector(".js-see-less-btn");
+    seeLessBtn.disabled = shownEntries === 5;
+    seeMoreBtn.disabled = shownEntries >= history.length;
+}
+function updateHistory() {
+    var _a;
+    const history = storage.get("history"), { length } = history;
+    if (length !== 0) {
         historyDescription.textContent = "Select an expression or result.";
         if (historyList === null) {
-            const historyListHTML = renderHistoryList(history);
-            historySection.insertAdjacentHTML("beforeend", historyListHTML);
+            const historyListHTML = renderHistoryList(history.slice(0, shownEntries)), ctrls = renderHistoryControls(length, shownEntries, 5), count = renderHistoryCount(length);
+            historySection.insertAdjacentHTML("beforeend", count + historyListHTML + ctrls);
+            registerHistoryCtrlsListeners();
             historyList = document.querySelector("#history-menu");
+            historyCtrls = document.querySelector(".js-history-ctrls");
         }
         else {
+            const count = document.querySelector("#history-count");
             const historyEntries = renderHistoryEntries(history.slice(0, shownEntries));
             historyList.innerHTML = historyEntries;
+            count.textContent = `${length} calculation${length === 1 ? "" : "s"} stored:`;
         }
         registerHistoryEntriesListeners();
+        updateHistoryCtrlsDisabledState();
     }
-    else if (historyList) {
+    else {
         historyDescription.textContent =
             "Your previous calculations will appear here.";
-        historyList.remove();
+        historyList === null || historyList === void 0 ? void 0 : historyList.remove();
+        historyCtrls === null || historyCtrls === void 0 ? void 0 : historyCtrls.remove();
+        (_a = document.querySelector("#history-count")) === null || _a === void 0 ? void 0 : _a.remove();
+        historyCtrls = null;
         historyList = null;
     }
 }

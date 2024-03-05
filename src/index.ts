@@ -3,6 +3,8 @@ import { announcePolitely } from "./visually-hidden-announcer.js";
 import { formatNumbers } from "./utils.js";
 import {
   prepareExpressionForPresentation,
+  renderHistoryControls,
+  renderHistoryCount,
   renderHistoryEntries,
   renderHistoryList,
 } from "./rendering.js";
@@ -52,7 +54,8 @@ const calculator = document.querySelector(".js-calculator") as HTMLElement,
     "#history-description"
   ) as HTMLParagraphElement;
 
-let historyList = document.querySelector("#history-menu");
+let historyList = document.querySelector("#history-menu"),
+  historyCtrls: Element | undefined | null;
 
 function animateExpression() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -93,9 +96,18 @@ function handleSelectClick(id: number, target: "res" | "exp") {
   historyPopover.hidePopover();
 }
 
+let shownEntries = 5;
 function handleDeleteEntry(id: number) {
   storage.delHistoryEntry(id);
+  const history = storage.get("history");
+  shownEntries =
+    shownEntries > history.length
+      ? history.length < 5
+        ? 5
+        : history.length
+      : shownEntries;
   updateHistory();
+  announcePolitely("Entry was deleted");
 }
 
 function registerHistoryEntriesListeners() {
@@ -125,28 +137,88 @@ function registerHistoryEntriesListeners() {
   });
 }
 
-let shownEntries = 10;
+function registerHistoryCtrlsListeners() {
+  const clearBtn = document.querySelector(
+      ".js-clear-btn"
+    )! as HTMLButtonElement,
+    seeMoreBtn = document.querySelector(
+      ".js-see-more-btn"
+    )! as HTMLButtonElement,
+    seeLessBtn = document.querySelector(
+      ".js-see-less-btn"
+    )! as HTMLButtonElement;
+
+  clearBtn.addEventListener("click", () => {
+    storage.clearHistory();
+    updateHistory();
+  });
+
+  seeMoreBtn.addEventListener("click", () => {
+    const history = storage.get("history");
+    const nextShownEntries = shownEntries + 5;
+    shownEntries = Math.min(history.length, nextShownEntries);
+
+    updateHistory();
+  });
+
+  seeLessBtn.addEventListener("click", () => {
+    const nextShownEntries = shownEntries - 5;
+    shownEntries = Math.max(nextShownEntries, 5);
+
+    updateHistory();
+  });
+}
+
+function updateHistoryCtrlsDisabledState() {
+  const history = storage.get("history");
+
+  const seeMoreBtn = document.querySelector(
+      ".js-see-more-btn"
+    )! as HTMLButtonElement,
+    seeLessBtn = document.querySelector(
+      ".js-see-less-btn"
+    )! as HTMLButtonElement;
+
+  seeLessBtn.disabled = shownEntries === 5;
+  seeMoreBtn.disabled = shownEntries >= history.length;
+}
 
 function updateHistory() {
-  const history = storage.get("history");
-  if (history.length !== 0) {
+  const history = storage.get("history"),
+    { length } = history;
+  if (length !== 0) {
     historyDescription.textContent = "Select an expression or result.";
     if (historyList === null) {
-      const historyListHTML = renderHistoryList(history);
+      const historyListHTML = renderHistoryList(history.slice(0, shownEntries)),
+        ctrls = renderHistoryControls(length, shownEntries, 5),
+        count = renderHistoryCount(length);
 
-      historySection.insertAdjacentHTML("beforeend", historyListHTML);
+      historySection.insertAdjacentHTML(
+        "beforeend",
+        count + historyListHTML + ctrls
+      );
+      registerHistoryCtrlsListeners();
       historyList = document.querySelector("#history-menu");
+      historyCtrls = document.querySelector(".js-history-ctrls");
     } else {
+      const count = document.querySelector("#history-count") as HTMLElement;
       const historyEntries = renderHistoryEntries(
         history.slice(0, shownEntries)
       );
       historyList.innerHTML = historyEntries;
+      count.textContent = `${length} calculation${
+        length === 1 ? "" : "s"
+      } stored:`;
     }
     registerHistoryEntriesListeners();
-  } else if (historyList) {
+    updateHistoryCtrlsDisabledState();
+  } else {
     historyDescription.textContent =
       "Your previous calculations will appear here.";
-    historyList.remove();
+    historyList?.remove();
+    historyCtrls?.remove();
+    document.querySelector("#history-count")?.remove();
+    historyCtrls = null;
     historyList = null;
   }
 }
