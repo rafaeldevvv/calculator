@@ -128,7 +128,8 @@ function registerHistoryEntriesListeners() {
     entryExp.addEventListener("click", () => {
       handleSelectClick(id, "exp");
     });
-    entryDelBtn.addEventListener("click", () => {
+    entryDelBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       handleDeleteEntry(id);
     });
     entryRes.addEventListener("click", () => {
@@ -148,7 +149,8 @@ function registerHistoryCtrlsListeners() {
       ".js-see-less-btn"
     )! as HTMLButtonElement;
 
-  clearBtn.addEventListener("click", () => {
+  clearBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     storage.clearHistory();
     updateHistory();
   });

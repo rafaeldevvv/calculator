@@ -66,7 +66,8 @@ function registerHistoryEntriesListeners() {
         entryExp.addEventListener("click", () => {
             handleSelectClick(id, "exp");
         });
-        entryDelBtn.addEventListener("click", () => {
+        entryDelBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
             handleDeleteEntry(id);
         });
         entryRes.addEventListener("click", () => {
@@ -76,7 +77,8 @@ function registerHistoryEntriesListeners() {
 }
 function registerHistoryCtrlsListeners() {
     const clearBtn = document.querySelector(".js-clear-btn"), seeMoreBtn = document.querySelector(".js-see-more-btn"), seeLessBtn = document.querySelector(".js-see-less-btn");
-    clearBtn.addEventListener("click", () => {
+    clearBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
         storage.clearHistory();
         updateHistory();
     });

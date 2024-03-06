@@ -654,6 +654,17 @@ ul {
    }
 }
 
+.unsupported-popover {
+   display: none;
+   transition-duration: 0ms;
+   transform: none;
+   opacity: 1;
+}
+
+.unsupported-popover[data-visible="true"] {
+   display: block;
+}
+
 .history-entry {
    border: 1px solid hsl(var(--c-text-primary) / .3);
 }
