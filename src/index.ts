@@ -17,9 +17,12 @@ const historyToggle = document.querySelector(
   ) as HTMLElement,
   historyPopover = document.getElementById(
     historyToggle.getAttribute("popovertarget") as string
-  ) as HTMLElement;
+  ) as HTMLElement,
+  shortcutsToggle = document.getElementById("shortcuts-toggle") as HTMLElement,
+  ctrls = document.querySelector(".js-controls") as HTMLElement;
 
-manageHistoryPopupMenu(historyToggle);
+manageHistoryPopupMenu(historyToggle, ctrls);
+manageHistoryPopupMenu(shortcutsToggle, ctrls);
 
 let expression = "",
   previousExpressions = [expression];

@@ -5,8 +5,9 @@ import { prepareExpressionForPresentation, renderHistoryControls, renderHistoryC
 import * as storage from "./storage.js";
 import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
 import doTheMath from "./calculator.js";
-const historyToggle = document.querySelector(".js-history-popover-toggle"), historyPopover = document.getElementById(historyToggle.getAttribute("popovertarget"));
-manageHistoryPopupMenu(historyToggle);
+const historyToggle = document.querySelector(".js-history-popover-toggle"), historyPopover = document.getElementById(historyToggle.getAttribute("popovertarget")), shortcutsToggle = document.getElementById("shortcuts-toggle"), ctrls = document.querySelector(".js-controls");
+manageHistoryPopupMenu(historyToggle, ctrls);
+manageHistoryPopupMenu(shortcutsToggle, ctrls);
 let expression = "", previousExpressions = [expression];
 function announceExpression() {
     if (expression) {

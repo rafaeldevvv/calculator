@@ -1,14 +1,17 @@
 function positionPopover(popover, positionTargetElement) {
     const { top, left, height } = positionTargetElement.getBoundingClientRect();
-    popover.style.left = left + "px";
-    popover.style.top = top + 10 + height + window.scrollY + "px";
+    popover.style.left = left + 10 + "px";
+    popover.style.top = top + height + "px";
 }
-export default function manageHistoryPopover(popoverToggle) {
+export default function manageHistoryPopover(popoverToggle, positionTarget) {
     const popoverId = popoverToggle.getAttribute("popovertarget");
     const popover = document.getElementById(popoverId);
-    positionPopover(popover, popoverToggle);
+    positionPopover(popover, positionTarget);
     window.addEventListener("resize", () => {
-        positionPopover(popover, popoverToggle);
+        positionPopover(popover, positionTarget);
+    });
+    window.addEventListener("scroll", () => {
+        positionPopover(popover, positionTarget);
     });
     if (!HTMLElement.prototype.hasOwnProperty("popover")) {
         managePopoverControl(popoverToggle, popover);

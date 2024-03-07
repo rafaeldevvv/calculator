@@ -87,13 +87,13 @@
                 <p class="js-expression__content"></p>
               </section>
 
-              <div class="controls">
+              <div class="controls relative js-controls">
                 <ul class="flex gap-x-2">
                   <li>
                     <!-- history -->
                     <div class="menu-parent js-menu-parent">
                       <button
-                        class="history-btn text-primary fs-300 js-history-popover-toggle"
+                        class="history-btn controls__btn text-primary fs-300 js-history-popover-toggle"
                         aria-controls="history-menu"
                         aria-haspopup="menu"
                         popovertarget="history-section"
@@ -107,7 +107,7 @@
                         <span class="visually-hidden">history</span>
                       </button>
                       <section
-                        class="history-popover absolute rounded js-menu-clickable-area js-history-popover text-primary"
+                        class="history-popover rounded js-menu-clickable-area js-history-popover text-primary"
                         aria-labelledby="history-heading"
                         id="history-section"
                         popover
@@ -121,7 +121,36 @@
                   </li>
                   <li>
                     <button
-                      class="text-primary copy-btn js-copy-button relative"
+                      type="button"
+                      title="Shortcuts"
+                      class="shortcuts-btn controls__btn"
+                      popovertarget="shortcuts"
+                      id="shortcuts-toggle"
+                    >
+                      <i class="fa-solid fa-keyboard"></i>
+                      <span class="visually-hidden">Shortcuts</span>
+                    </button>
+                    <section
+                      id="shortcuts"
+                      aria-labelledby="shortcuts-heading"
+                      class="shortcuts bg-secondary rounded text-primary"
+                      popover
+                    >
+                      <h2 id="shortcuts-heading" class="mb-1">Shortcuts</h2>
+                      <ul class="fs-200 flow" style="--flow-space: 0.3rem">
+                        <li>
+                          <kbd class="code">Backspace</kbd> - Delete last
+                          character
+                        </li>
+                        <li>
+                          <kbd class="code">Ctrl + z</kbd> - Go to previous step
+                        </li>
+                      </ul>
+                    </section>
+                  </li>
+                  <li>
+                    <button
+                      class="text-primary controls__btn copy-btn js-copy-button relative"
                       title="Copy"
                     >
                       <i class="fa-solid fa-copy js-icon"></i>

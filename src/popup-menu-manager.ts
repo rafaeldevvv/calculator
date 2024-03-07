@@ -3,17 +3,23 @@ function positionPopover(
   positionTargetElement: HTMLElement
 ) {
   const { top, left, height } = positionTargetElement.getBoundingClientRect();
-  popover.style.left = left + "px";
-  popover.style.top = top + 10 + height + window.scrollY + "px";
+  popover.style.left = left + 10 + "px";
+  popover.style.top = top + height + "px";
 }
 
-export default function manageHistoryPopover(popoverToggle: HTMLElement) {
+export default function manageHistoryPopover(
+  popoverToggle: HTMLElement,
+  positionTarget: HTMLElement
+) {
   const popoverId = popoverToggle.getAttribute("popovertarget") as string;
 
   const popover = document.getElementById(popoverId) as HTMLElement;
-  positionPopover(popover, popoverToggle);
+  positionPopover(popover, positionTarget);
   window.addEventListener("resize", () => {
-    positionPopover(popover, popoverToggle);
+    positionPopover(popover, positionTarget);
+  });
+  window.addEventListener("scroll", () => {
+    positionPopover(popover, positionTarget);
   });
   if (!HTMLElement.prototype.hasOwnProperty("popover")) {
     managePopoverControl(popoverToggle, popover);

@@ -521,6 +521,15 @@ ul {
    cursor: not-allowed;
 }
 
+.code {
+   background-color: #222;
+   color: white;
+   display: inline-block;
+   padding: 0 .3rem;
+   border-radius: .2rem;
+   border-bottom: 2px solid #555;
+}
+
 /* ===================== components ======================== */
 
 .key {
@@ -599,36 +608,33 @@ ul {
    border-radius: 0 0 .6rem .6rem;
 }
 
-.history-btn,
-.copy-btn {
+.controls__btn,
+.controls__btn {
    opacity: .7;
    outline-offset: .5rem;
 }
 
-.history-btn:hover,
-.history-btn:focus-visible,
-.copy-btn:hover,
-.copy-btn:focus-visible {
+.controls__btn:hover,
+.controls__btn:focus-visible,
+.controls__btn:hover,
+.controls__btn:focus-visible {
    opacity: 1;
 }
 
-.history-btn:active,
-.copy-btn:active {
+.controls__btn:active,
+.controls__btn:active {
    transform: scale(.8);
 }
 
-.history-popover {
+.history-popover,
+.shortcuts {
    box-shadow: 0 0 20px hsl(0 0% 0% / .5);
-   top: 140%;
    background-color: hsl(var(--c-primary));
    padding: 1.5rem 1rem;
    border: 1px solid hsl(var(--c-text-primary));
    width: min(23rem, 80vw);
    max-height: 20rem;
-   overflow-y: scroll;
    z-index: 9999;
-
-   scrollbar-color: var(--scrollbar-fg) transparent;
 
    transform-origin: top left;
 
@@ -640,15 +646,20 @@ ul {
       transform 400ms ease-out,
       display 400ms allow-discrete,
       overlay 400ms allow-discrete;
+
+   scrollbar-color: var(--scrollbar-fg) transparent;
 }
 
-.history-popover:popover-open {
+.history-popover:popover-open,
+.shortcuts:popover-open {
    opacity: 1;
    transform: scale(1);
 }
 
 @starting-style {
-   .history-popover:popover-open {
+
+   .history-popover:popover-open,
+   .shortcuts:popover-open {
       transform: scale(0);
       opacity: 0;
    }
@@ -696,6 +707,10 @@ ul {
 .history-ctrl:focus-visible {
    outline-color: 2px solid hsl(var(--c-text-primary));
    outline-offset: .1rem;
+}
+
+.shortcuts-wrapper summary {
+   list-style: none;
 }
 
 /* ====================== radio buttons ============================= */
