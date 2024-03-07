@@ -137,6 +137,10 @@ function deleteLastSymbol() {
     updateExpression(expression.slice(0, expression.length - 1));
     updateExpressionDOM(expression);
 }
+function addSymbol(symb) {
+    updateExpression(expression + symb);
+    updateExpressionDOM(expression);
+}
 symbolKeys.forEach((k) => {
     const symbol = k.getAttribute("data-symbol");
     k.addEventListener("click", () => {
@@ -148,25 +152,74 @@ symbolKeys.forEach((k) => {
         dismissAlert();
     });
 });
-resetKey.addEventListener("click", () => {
+function resetExp() {
     updateExpression("");
     updateExpressionDOM(expression);
+}
+resetKey.addEventListener("click", () => {
+    resetExp();
     dismissAlert();
 });
 delKey.addEventListener("click", () => {
     deleteLastSymbol();
     dismissAlert();
 });
+const shortcuts = {
+    "": "",
+};
+const validChrs = new Set([
+    "+",
+    "-",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "0",
+    "(",
+    ")",
+    "^",
+    "%",
+    "x",
+]);
 window.addEventListener("keydown", (e) => {
+    const { key } = e;
     if (e.ctrlKey) {
-        if (e.key == "z") {
+        if (key == "z") {
             expression = previousExpressions.pop() || "";
             updateExpressionDOM(expression);
         }
     }
-    else if (e.key === "Backspace") {
-        deleteLastSymbol();
+    else if (validChrs.has(key)) {
+        addSymbol(key);
         dismissAlert();
+    }
+    else {
+        switch (key) {
+            case "Backspace": {
+                dismissAlert();
+                deleteLastSymbol();
+                break;
+            }
+            case "/": {
+                dismissAlert();
+                addSymbol("÷");
+                break;
+            }
+            case "=": {
+                dismissAlert();
+                showResult();
+                break;
+            }
+            case "r": {
+                resetExp();
+                dismissAlert();
+            }
+        }
     }
 });
 resultKey.addEventListener("click", showResult);

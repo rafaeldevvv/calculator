@@ -317,6 +317,10 @@ ul {
    justify-content: space-around;
 }
 
+.items-center {
+   align-items: center;
+}
+
 .grid {
    display: grid
 }
@@ -527,7 +531,7 @@ ul {
    display: inline-block;
    padding: 0 .3rem;
    border-radius: .2rem;
-   border-bottom: 2px solid #555;
+   border-bottom: 2px solid #444;
 }
 
 /* ===================== components ======================== */
@@ -656,6 +660,10 @@ ul {
    transform: scale(1);
 }
 
+.shortcuts dt::after {
+   content: " -";
+}
+
 @starting-style {
 
    .history-popover:popover-open,
@@ -707,10 +715,6 @@ ul {
 .history-ctrl:focus-visible {
    outline-color: 2px solid hsl(var(--c-text-primary));
    outline-offset: .1rem;
-}
-
-.shortcuts-wrapper summary {
-   list-style: none;
 }
 
 /* ====================== radio buttons ============================= */
