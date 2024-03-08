@@ -525,13 +525,13 @@ ul {
    cursor: not-allowed;
 }
 
-.code {
-   background-color: #222;
+.keyboard {
+   background-color: #333;
    color: white;
    display: inline-block;
-   padding: 0 .3rem;
+   padding: .1rem .4rem;
    border-radius: .2rem;
-   border-bottom: 2px solid #444;
+   border-bottom: 2px solid #222;
 }
 
 /* ===================== components ======================== */
@@ -566,7 +566,7 @@ ul {
    background-color: hsl(var(--c-most-special-key-bg));
 }
 
-.keyboard {
+.calculator-keyboard {
    grid-template-columns: repeat(4, 1fr);
    padding: 1.5rem;
    gap: clamp(.5rem, 4vw, 1.5rem);
