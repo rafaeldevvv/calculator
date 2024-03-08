@@ -164,9 +164,6 @@ delKey.addEventListener("click", () => {
     deleteLastSymbol();
     dismissAlert();
 });
-const shortcuts = {
-    "": "",
-};
 const validChrs = new Set([
     "+",
     "-",
@@ -195,6 +192,7 @@ window.addEventListener("keydown", (e) => {
         }
     }
     else if (validChrs.has(key)) {
+        e.preventDefault();
         addSymbol(key);
         dismissAlert();
     }
@@ -211,6 +209,7 @@ window.addEventListener("keydown", (e) => {
                 break;
             }
             case "=": {
+                e.preventDefault();
                 dismissAlert();
                 showResult();
                 break;

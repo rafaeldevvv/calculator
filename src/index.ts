@@ -267,10 +267,6 @@ delKey.addEventListener("click", () => {
   dismissAlert();
 });
 
-const shortcuts = {
-  "": "",
-};
-
 const validChrs = new Set([
   "+",
   "-",
@@ -299,6 +295,7 @@ window.addEventListener("keydown", (e) => {
       updateExpressionDOM(expression);
     }
   } else if (validChrs.has(key)) {
+    e.preventDefault();
     addSymbol(key);
     dismissAlert();
   } else {
@@ -314,6 +311,7 @@ window.addEventListener("keydown", (e) => {
         break;
       }
       case "=": {
+        e.preventDefault();
         dismissAlert();
         showResult();
         break;
