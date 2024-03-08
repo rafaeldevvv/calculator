@@ -30,7 +30,9 @@ Users should be able to:
 
 ### Screenshot
 
-- ![](./images/screenshot.png)
+- ![blue theme calculator](./images/screenshot-blue.png)
+- ![white theme calculator](./images/screenshot-white.png)
+- ![Purple theme calculator](./images/screenshot-purple.png)
 
 ### Built with
 
