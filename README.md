@@ -7,7 +7,7 @@ This is a solution to the [Calculator app challenge on Frontend Mentor](https://
 - [Overview](#overview)
   - [The challenge](#the-challenge)
   - [Links](#links)
-  - [Screenshots](#screenshots)
+  - [Screenshot](#screenshot)
   - [Built with](#built-with)
 - [About Project](#about-project)
 - [Author](#author)
@@ -26,9 +26,11 @@ Users should be able to:
 
 ### Links
 
-- [Live site](https://rafaeldevvv.github.io/calculator)
+- Live Site: [https://rafaeldevvv.github.io/calculator](https://rafaeldevvv.github.io/calculator)
 
-### Screenshots
+### Screenshot
+
+- ![](./images/screenshot.png)
 
 ### Built with
 
@@ -41,9 +43,7 @@ Users should be able to:
 
 ## About Project
 
-If you look at the code, you'll realize that instead of just replacing characters and passing a javascript math expression string to `Function` or `eval`, i chose to parse the expression because I wanted a real challenge.
-
-I thought that because I have already made more complex projects, a calculator would be too easy and it really was even increasing the difficulty by with actual parsing.
+If you look at the code, you'll realize that instead of just replacing characters and passing a javascript math expression string to `Function` or `eval`, i chose to use regular expressions because I wanted a real challenge. That's because I thought that because I have already made more complex projects, a calculator would be too easy.
 
 It was a fun project. I could have finished it quicker, but I spent some time reading some interesting articles about some javascript concepts.
 
