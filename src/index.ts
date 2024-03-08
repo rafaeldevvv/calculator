@@ -1,16 +1,17 @@
-import manageHistoryPopupMenu from "./popup-menu-manager.js";
-import { announcePolitely } from "./visually-hidden-announcer.js";
-import { formatNumbers } from "./utils.js";
+import "./themes";
+import manageHistoryPopupMenu from "./popup-menu-manager";
+import { announcePolitely } from "./visually-hidden-announcer";
+import { formatNumbers } from "./utils";
 import {
   prepareExpressionForPresentation,
   renderHistoryControls,
   renderHistoryCount,
   renderHistoryEntries,
   renderHistoryList,
-} from "./rendering.js";
-import * as storage from "./storage.js";
-import alertUser, { dismiss as dismissAlert } from "./custom-alert.js";
-import doTheMath from "./calculator.js";
+} from "./rendering";
+import * as storage from "./storage";
+import alertUser, { dismiss as dismissAlert } from "./custom-alert";
+import doTheMath from "./calculator";
 
 const historyToggle = document.querySelector(
     ".js-history-popover-toggle"

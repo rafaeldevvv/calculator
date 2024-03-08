@@ -1,4 +1,4 @@
-import { spliceString, splitAtIndex } from "./utils.js";
+import { spliceString, splitAtIndex } from "./utils";
 
 const binaryOperators = ["+", "-", "x", "÷", "^"] as const;
 type BinaryOperator = (typeof binaryOperators)[number];

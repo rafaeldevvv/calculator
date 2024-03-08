@@ -1,5 +1,5 @@
 import type { Theme } from "./types";
-import * as storage from "./storage.js";
+import * as storage from "./storage";
 
 const themes = [
   "theme-blue",

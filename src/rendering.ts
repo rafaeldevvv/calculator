@@ -1,5 +1,5 @@
 import type { HistoryEntry } from "./types";
-import { formatNumbers } from "./utils.js";
+import { formatNumbers } from "./utils";
 
 export function renderHistoryListItem(entry: HistoryEntry) {
   const { id, expression, result } = entry;

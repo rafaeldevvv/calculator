@@ -5,7 +5,7 @@ export function createAlert(announcement: string) {
   return customAlert;
 }
 
-let currentTimeout: number | undefined,
+let currentTimeout: number | undefined | NodeJS.Timeout,
   showingAlert = false,
   animationDuration: undefined | null | number;
 
