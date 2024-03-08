@@ -81,6 +81,7 @@ function registerHistoryCtrlsListeners() {
     clearBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         storage.clearHistory();
+        announcePolitely("History cleared!");
         updateHistory();
     });
     seeMoreBtn.addEventListener("click", () => {

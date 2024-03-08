@@ -7,14 +7,14 @@ export function renderHistoryListItem(entry) {
         class="js-entry-exp history-entry__expression hover:bg-darker block text-left capitalize p-1 rounded" 
         type="button"
       >
-      exp: ${prepareExpressionForPresentation(formatNumbers(expression))}
+      expression: ${prepareExpressionForPresentation(formatNumbers(expression))}
       </button>
       <div class="flex">
         <button 
           class="js-entry-res history-entry__result hover:bg-darker block text-left capitalize p-1 rounded" 
           type="button"
         >
-        res: ${formatNumbers(result.toString())}
+        result: ${formatNumbers(result.toString())}
         </button>
         <button 
           type="button"
@@ -68,6 +68,7 @@ export function renderHistoryList(entries) {
       aria-describedby="history-description"
       class="history-list flow"
       aria-live="polite"
+      aria
     >${renderHistoryEntries(entries)}</ul>
   `;
 }
