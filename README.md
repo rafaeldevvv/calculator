@@ -7,9 +7,10 @@ This is a solution to the [Calculator app challenge on Frontend Mentor](https://
 - [Overview](#overview)
   - [The challenge](#the-challenge)
   - [Links](#links)
-  - [Screenshot](#screenshot)
+  - [Screenshots](#screenshots)
   - [Built with](#built-with)
 - [About Project](#about-project)
+- [Good Resources](#good-resources)
 - [Author](#author)
 - [Donate](#donate)
 
@@ -28,11 +29,11 @@ Users should be able to:
 
 - Live Site: [https://rafaeldevvv.github.io/calculator](https://rafaeldevvv.github.io/calculator)
 
-### Screenshot
+### Screenshots
 
-- ![blue theme calculator](./images/screenshot-blue.png)
-- ![white theme calculator](./images/screenshot-white.png)
-- ![Purple theme calculator](./images/screenshot-purple.png)
+![blue theme calculator](./images/screenshot-blue.png)
+![white theme calculator](./images/screenshot-white.png)
+![Purple theme calculator](./images/screenshot-purple.png)
 
 ### Built with
 
